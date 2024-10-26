@@ -19,14 +19,14 @@ class Helper
             return true;
         }
 
-        $pattern = preg_quote($pattern, '#');
+        $pattern = \preg_quote($pattern, '#');
 
         // Asterisks are translated into zero-or-more regular expression wildcards
         // to make it convenient to check if the strings starts with the given
         // pattern such as "library/*", making any string check convenient.
-        $pattern = str_replace('\*', '.*', $pattern);
+        $pattern = \str_replace('\*', '.*', $pattern);
 
-        return (bool) preg_match('#^'.$pattern.'\z#u', $value);
+        return (bool) \preg_match('#^' . $pattern . '\z#u', $value);
     }
 
     /**
@@ -39,12 +39,12 @@ class Helper
      */
     public static function arrayHas(array $array, string $key): bool
     {
-        if (array_key_exists($key, $array)) {
+        if (\array_key_exists($key, $array)) {
             return true;
         }
 
-        foreach (explode('.', $key) as $segment) {
-            if (is_array($array) && array_key_exists($segment, $array)) {
+        foreach (\explode('.', $key) as $segment) {
+            if (\is_array($array) && \array_key_exists($segment, $array)) {
                 $array = $array[$segment];
             } else {
                 return false;
@@ -65,16 +65,16 @@ class Helper
      */
     public static function arrayGet(array $array, $key, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $array;
         }
 
-        if (array_key_exists($key, $array)) {
+        if (\array_key_exists($key, $array)) {
             return $array[$key];
         }
 
-        foreach (explode('.', $key) as $segment) {
-            if (is_array($array) && array_key_exists($segment, $array)) {
+        foreach (\explode('.', $key) as $segment) {
+            if (\is_array($array) && \array_key_exists($segment, $array)) {
                 $array = $array[$segment];
             } else {
                 return $default;
@@ -97,10 +97,10 @@ class Helper
         $results = [];
 
         foreach ($array as $key => $value) {
-            if (is_array($value) && ! empty($value)) {
-                $results = array_merge($results, static::arrayDot($value, $prepend.$key.'.'));
+            if (\is_array($value) && ! empty($value)) {
+                $results = \array_merge($results, static::arrayDot($value, $prepend . $key . '.'));
             } else {
-                $results[$prepend.$key] = $value;
+                $results[$prepend . $key] = $value;
             }
         }
 
@@ -119,17 +119,17 @@ class Helper
      */
     public static function arraySet(&$target, $key, $value, $overwrite = true): array
     {
-        if (is_null($key)) {
+        if ($key === null) {
             if ($overwrite) {
-                return $target = array_merge($target, $value);
+                return $target = \array_merge($target, $value);
             }
-            return $target = array_merge($value, $target);
+            return $target = \array_merge($value, $target);
         }
 
-        $segments = is_array($key) ? $key : explode('.', $key);
+        $segments = \is_array($key) ? $key : \explode('.', $key);
 
-        if (($segment = array_shift($segments)) === '*') {
-            if (! is_array($target)) {
+        if (($segment = \array_shift($segments)) === '*') {
+            if (! \is_array($target)) {
                 $target = [];
             }
 
@@ -142,14 +142,14 @@ class Helper
                     $inner = $value;
                 }
             }
-        } elseif (is_array($target)) {
+        } elseif (\is_array($target)) {
             if ($segments) {
-                if (! array_key_exists($segment, $target)) {
+                if (! \array_key_exists($segment, $target)) {
                     $target[$segment] = [];
                 }
 
                 static::arraySet($target[$segment], $segments, $value, $overwrite);
-            } elseif ($overwrite || ! array_key_exists($segment, $target)) {
+            } elseif ($overwrite || ! \array_key_exists($segment, $target)) {
                 $target[$segment] = $value;
             }
         } else {
@@ -174,20 +174,20 @@ class Helper
      */
     public static function arrayUnset(&$target, $key)
     {
-        if (!is_array($target)) {
+        if (!\is_array($target)) {
             return $target;
         }
 
-        $segments = is_array($key) ? $key : explode('.', $key);
-        $segment = array_shift($segments);
+        $segments = \is_array($key) ? $key : \explode('.', $key);
+        $segment = \array_shift($segments);
 
         if ($segment == '*') {
             $target = [];
         } elseif ($segments) {
-            if (array_key_exists($segment, $target)) {
+            if (\array_key_exists($segment, $target)) {
                 static::arrayUnset($target[$segment], $segments);
             }
-        } elseif (array_key_exists($segment, $target)) {
+        } elseif (\array_key_exists($segment, $target)) {
             unset($target[$segment]);
         }
 
@@ -203,9 +203,9 @@ class Helper
      */
     public static function snakeCase(string $value, string $delimiter = '_'): string
     {
-        if (! ctype_lower($value)) {
-            $value = preg_replace('/\s+/u', '', ucwords($value));
-            $value = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1'.$delimiter, $value));
+        if (! \ctype_lower($value)) {
+            $value = \preg_replace('/\s+/u', '', \ucwords($value));
+            $value = \strtolower(\preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
         }
 
         return $value;
@@ -221,19 +221,19 @@ class Helper
      */
     public static function join(array $pieces, string $separator, string $lastSeparator = null): string
     {
-        if (is_null($lastSeparator)) {
+        if ($lastSeparator === null) {
             $lastSeparator = $separator;
         }
 
-        $last = array_pop($pieces);
+        $last = \array_pop($pieces);
 
-        switch (count($pieces)) {
+        switch (\count($pieces)) {
             case 0:
                 return $last ?: '';
             case 1:
                 return $pieces[0] . $lastSeparator . $last;
             default:
-                return implode($separator, $pieces) . $lastSeparator . $last;
+                return \implode($separator, $pieces) . $lastSeparator . $last;
         }
     }
 
@@ -247,11 +247,11 @@ class Helper
      */
     public static function wraps(array $strings, string $prefix, string $suffix = null): array
     {
-        if (is_null($suffix)) {
+        if ($suffix === null) {
             $suffix = $prefix;
         }
 
-        return array_map(function ($str) use ($prefix, $suffix) {
+        return \array_map(function ($str) use ($prefix, $suffix) {
             return $prefix . $str . $suffix;
         }, $strings);
     }

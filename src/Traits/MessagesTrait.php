@@ -28,7 +28,7 @@ trait MessagesTrait
      */
     public function setMessages(array $messages)
     {
-        $this->messages = array_merge($this->messages, $messages);
+        $this->messages = \array_merge($this->messages, $messages);
     }
 
     /**
@@ -39,7 +39,7 @@ trait MessagesTrait
      */
     public function getMessage(string $key): string
     {
-        return array_key_exists($key, $this->messages) ? $this->messages[$key] : $key;
+        return \array_key_exists($key, $this->messages) ? $this->messages[$key] : $key;
     }
 
     /**

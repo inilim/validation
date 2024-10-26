@@ -26,6 +26,7 @@ class Same extends Rule
         $field = $this->parameter('field');
         $anotherValue = $this->getAttribute()->getValue($field);
 
+        // TODO strict??
         return $value == $anotherValue;
     }
 }

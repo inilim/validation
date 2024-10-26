@@ -15,7 +15,7 @@ trait DateUtilsTrait
      */
     protected function isValidDate(string $date): bool
     {
-        return (strtotime($date) !== false);
+        return (\strtotime($date) !== false);
     }
 
     /**
@@ -38,6 +38,6 @@ trait DateUtilsTrait
      */
     protected function getTimeStamp($date): int
     {
-        return strtotime($date);
+        return \strtotime($date);
     }
 }

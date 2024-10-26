@@ -4,7 +4,6 @@ namespace Rakit\Validation;
 
 class Attribute
 {
-
     /** @var array */
     protected $rules = [];
 
@@ -45,8 +44,8 @@ class Attribute
         array $rules = []
     ) {
         $this->validation = $validation;
-        $this->alias = $alias;
-        $this->key = $key;
+        $this->alias      = $alias;
+        $this->key        = $key;
         foreach ($rules as $rule) {
             $this->addRule($rule);
         }
@@ -140,7 +139,7 @@ class Attribute
      */
     public function getRule(string $ruleKey)
     {
-        return $this->hasRule($ruleKey)? $this->rules[$ruleKey] : null;
+        return $this->hasRule($ruleKey) ? $this->rules[$ruleKey] : null;
     }
 
     /**
@@ -231,7 +230,7 @@ class Attribute
      */
     public function isArrayAttribute(): bool
     {
-        return count($this->getKeyIndexes()) > 0;
+        return \count($this->getKeyIndexes()) > 0;
     }
 
     /**
@@ -241,7 +240,7 @@ class Attribute
      */
     public function isUsingDotNotation(): bool
     {
-        return strpos($this->getKey(), '.') !== false;
+        return \strpos($this->getKey(), '.') !== false;
     }
 
     /**
@@ -252,14 +251,15 @@ class Attribute
      */
     public function resolveSiblingKey(string $key): string
     {
-        $indexes = $this->getKeyIndexes();
-        $keys = explode("*", $key);
-        $countAsterisks = count($keys) - 1;
-        if (count($indexes) < $countAsterisks) {
-            $indexes = array_merge($indexes, array_fill(0, $countAsterisks - count($indexes), "*"));
+        $indexes        = $this->getKeyIndexes();
+        $keys           = \explode('*', $key);
+        $countAsterisks = \count($keys) - 1;
+        if (\count($indexes) < $countAsterisks) {
+            $indexes = \array_merge($indexes, \array_fill(0, $countAsterisks - \count($indexes), "*"));
         }
-        $args = array_merge([str_replace("*", "%s", $key)], $indexes);
-        return call_user_func_array('sprintf', $args);
+        $args = \array_merge([\str_replace('*', '%s', $key)], $indexes);
+
+        return \call_user_func_array('sprintf', $args);
     }
 
     /**
@@ -270,20 +270,20 @@ class Attribute
     public function getHumanizedKey()
     {
         $primaryAttribute = $this->getPrimaryAttribute();
-        $key = str_replace('_', ' ', $this->key);
+        $key              = \str_replace('_', ' ', $this->key);
 
         // Resolve key from array validation
         if ($primaryAttribute) {
-            $split = explode('.', $key);
-            $key = implode(' ', array_map(function ($word) {
-                if (is_numeric($word)) {
+            $split = \explode('.', $key);
+            $key   = \implode(' ',  \array_map(static function ($word) {
+                if (\is_numeric($word)) {
                     $word = $word + 1;
                 }
                 return Helper::snakeCase($word, ' ');
             }, $split));
         }
 
-        return ucfirst($key);
+        return \ucfirst($key);
     }
 
     /**

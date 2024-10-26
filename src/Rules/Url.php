@@ -18,7 +18,7 @@ class Url extends Rule
      */
     public function fillParameters(array $params): Rule
     {
-        if (count($params) == 1 and is_array($params[0])) {
+        if (\count($params) == 1 and \is_array($params[0])) {
             $params = $params[0];
         }
         return $this->forScheme($params);
@@ -50,8 +50,8 @@ class Url extends Rule
             return $this->validateCommonScheme($value);
         } else {
             foreach ($schemes as $scheme) {
-                $method = 'validate' . ucfirst($scheme) .'Scheme';
-                if (method_exists($this, $method)) {
+                $method = 'validate' . \ucfirst($scheme) . 'Scheme';
+                if (\method_exists($this, $method)) {
                     if ($this->{$method}($value)) {
                         return true;
                     }
@@ -72,7 +72,7 @@ class Url extends Rule
      */
     public function validateBasic($value): bool
     {
-        return filter_var($value, FILTER_VALIDATE_URL) !== false;
+        return \filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
 
     /**
@@ -85,9 +85,9 @@ class Url extends Rule
     public function validateCommonScheme($value, $scheme = null): bool
     {
         if (!$scheme) {
-            return $this->validateBasic($value) && (bool) preg_match("/^\w+:\/\//i", $value);
+            return $this->validateBasic($value) && (bool) \preg_match("/^\w+:\/\//i", $value);
         } else {
-            return $this->validateBasic($value) && (bool) preg_match("/^{$scheme}:\/\//", $value);
+            return $this->validateBasic($value) && (bool) \preg_match("/^{$scheme}:\/\//", $value);
         }
     }
 
@@ -99,7 +99,7 @@ class Url extends Rule
      */
     public function validateMailtoScheme($value): bool
     {
-        return $this->validateBasic($value) && preg_match("/^mailto:/", $value);
+        return $this->validateBasic($value) && \preg_match("/^mailto:/", $value);
     }
 
     /**
@@ -110,6 +110,6 @@ class Url extends Rule
      */
     public function validateJdbcScheme($value): bool
     {
-        return (bool) preg_match("/^jdbc:\w+:\/\//", $value);
+        return (bool) \preg_match("/^jdbc:\w+:\/\//", $value);
     }
 }

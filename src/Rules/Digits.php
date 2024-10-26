@@ -25,7 +25,7 @@ class Digits extends Rule
 
         $length = (int) $this->parameter('length');
 
-        return ! preg_match('/[^0-9]/', $value)
-                    && strlen((string) $value) == $length;
+        return ! \preg_match('/[^0-9]/', $value)
+            && \strlen((string) $value) == $length;
     }
 }

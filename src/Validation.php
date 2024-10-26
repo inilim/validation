@@ -51,9 +51,9 @@ class Validation
         array $messages = []
     ) {
         $this->validator = $validator;
-        $this->inputs = $this->resolveInputAttributes($inputs);
-        $this->messages = $messages;
-        $this->errors = new ErrorBag;
+        $this->inputs    = $this->resolveInputAttributes($inputs);
+        $this->messages  = $messages;
+        $this->errors    = new ErrorBag;
         foreach ($rules as $attributeKey => $rules) {
             $this->addAttribute($attributeKey, $rules);
         }
@@ -69,7 +69,12 @@ class Validation
     public function addAttribute(string $attributeKey, $rules)
     {
         $resolvedRules = $this->resolveRules($rules);
-        $attribute = new Attribute($this, $attributeKey, $this->getAlias($attributeKey), $resolvedRules);
+        $attribute     = new Attribute(
+            $this,
+            $attributeKey,
+            $this->getAlias($attributeKey),
+            $resolvedRules
+        );
         $this->attributes[$attributeKey] = $attribute;
     }
 
@@ -81,19 +86,20 @@ class Validation
      */
     public function getAttribute(string $attributeKey)
     {
-        return isset($this->attributes[$attributeKey])? $this->attributes[$attributeKey] : null;
+        return $this->attributes[$attributeKey] ?? null;
     }
 
     /**
      * Run validation
      *
      * @param array $inputs
-     * @return void
      */
-    public function validate(array $inputs = [])
+    public function validate(array $inputs = []): self
     {
         $this->errors = new ErrorBag; // reset error bag
-        $this->inputs = array_merge($this->inputs, $this->resolveInputAttributes($inputs));
+        if ($inputs) {
+            $this->inputs = \array_merge($this->inputs, $this->resolveInputAttributes($inputs));
+        }
 
         // Before validation hooks
         foreach ($this->attributes as $attributeKey => $attribute) {
@@ -107,6 +113,8 @@ class Validation
         foreach ($this->attributes as $attributeKey => $attribute) {
             $this->validateAttribute($attribute);
         }
+
+        return $this;
     }
 
     /**
@@ -136,9 +144,9 @@ class Validation
         }
 
         $attributeKey = $attribute->getKey();
-        $rules = $attribute->getRules();
+        $rules        = $attribute->getRules();
 
-        $value = $this->getValue($attributeKey);
+        $value        = $this->getValue($attributeKey);
         $isEmptyValue = $this->isEmptyValue($value);
 
         if ($attribute->hasRule('nullable') && $isEmptyValue) {
@@ -184,8 +192,7 @@ class Validation
      */
     protected function isArrayAttribute(Attribute $attribute): bool
     {
-        $key = $attribute->getKey();
-        return strpos($key, '*') !== false;
+        return \strpos($attribute->getKey(), '*') !== false;
     }
 
     /**
@@ -197,11 +204,12 @@ class Validation
     protected function parseArrayAttribute(Attribute $attribute): array
     {
         $attributeKey = $attribute->getKey();
-        $data = Helper::arrayDot($this->initializeAttributeOnData($attributeKey));
+        $data         = Helper::arrayDot(
+            $this->initializeAttributeOnData($attributeKey)
+        );
 
-        $pattern = str_replace('\*', '([^\.]+)', preg_quote($attributeKey));
-
-        $data = array_merge($data, $this->extractValuesForWildcards(
+        $pattern = \str_replace('\*', '([^\.]+)', \preg_quote($attributeKey));
+        $data    = \array_merge($data, $this->extractValuesForWildcards(
             $data,
             $attributeKey
         ));
@@ -209,10 +217,10 @@ class Validation
         $attributes = [];
 
         foreach ($data as $key => $value) {
-            if ((bool) preg_match('/^'.$pattern.'\z/', $key, $match)) {
+            if ((bool) preg_match('/^' . $pattern . '\z/', $key, $match)) {
                 $attr = new Attribute($this, $key, null, $attribute->getRules());
                 $attr->setPrimaryAttribute($attribute);
-                $attr->setKeyIndexes(array_slice($match, 1));
+                $attr->setKeyIndexes(\array_slice($match, 1));
                 $attributes[] = $attr;
             }
         }
@@ -236,13 +244,12 @@ class Validation
      */
     protected function initializeAttributeOnData(string $attributeKey): array
     {
-        $explicitPath = $this->getLeadingExplicitAttributePath($attributeKey);
+        $data = $this->extractDataFromPath(
+            $this->getLeadingExplicitAttributePath($attributeKey)
+        );
+        $asteriskPos = \strpos($attributeKey, '*');
 
-        $data = $this->extractDataFromPath($explicitPath);
-
-        $asteriskPos = strpos($attributeKey, '*');
-
-        if (false === $asteriskPos || $asteriskPos === (mb_strlen($attributeKey, 'UTF-8') - 1)) {
+        if (false === $asteriskPos || $asteriskPos === (\mb_strlen($attributeKey, 'UTF-8') - 1)) {
             return $data;
         }
 
@@ -261,15 +268,15 @@ class Validation
     {
         $keys = [];
 
-        $pattern = str_replace('\*', '[^\.]+', preg_quote($attributeKey));
+        $pattern = \str_replace('\*', '[^\.]+', \preg_quote($attributeKey));
 
         foreach ($data as $key => $value) {
-            if ((bool) preg_match('/^'.$pattern.'/', $key, $matches)) {
-                $keys[] = $matches[0];
+            if ((bool) \preg_match('/^' . $pattern . '/', $key, $matches)) {
+                $keys[$matches[0]] = null;
             }
         }
 
-        $keys = array_unique($keys);
+        $keys = \array_keys($keys);
 
         $data = [];
 
@@ -293,7 +300,7 @@ class Validation
      */
     protected function getLeadingExplicitAttributePath(string $attributeKey)
     {
-        return rtrim(explode('*', $attributeKey)[0], '.') ?: null;
+        return \rtrim(\explode('*', $attributeKey)[0], '.') ?: null;
     }
 
     /**
@@ -328,10 +335,11 @@ class Validation
      */
     protected function addError(Attribute $attribute, $value, Rule $ruleValidator)
     {
-        $ruleName = $ruleValidator->getKey();
-        $message = $this->resolveMessage($attribute, $value, $ruleValidator);
-
-        $this->errors->add($attribute->getKey(), $ruleName, $message);
+        $this->errors->add(
+            $attribute->getKey(),
+            $ruleValidator->getKey(), // rule name
+            $this->resolveMessage($attribute, $value, $ruleValidator) // message
+        );
     }
 
     /**
@@ -342,8 +350,7 @@ class Validation
      */
     protected function isEmptyValue($value): bool
     {
-        $requiredValidator = new Required;
-        return false === $requiredValidator->check($value, []);
+        return false === (new Required)->check($value, []);
     }
 
     /**
@@ -391,13 +398,13 @@ class Validation
     protected function resolveMessage(Attribute $attribute, $value, Rule $validator): string
     {
         $primaryAttribute = $attribute->getPrimaryAttribute();
-        $params = array_merge($validator->getParameters(), $validator->getParametersTexts());
-        $attributeKey = $attribute->getKey();
-        $ruleKey = $validator->getKey();
-        $alias = $attribute->getAlias() ?: $this->resolveAttributeName($attribute);
-        $message = $validator->getMessage(); // default rule message
-        $messageKeys = [
-            $attributeKey.$this->messageSeparator.$ruleKey,
+        $params           = \array_merge($validator->getParameters(), $validator->getParametersTexts());
+        $attributeKey     = $attribute->getKey();
+        $ruleKey          = $validator->getKey();
+        $alias            = $attribute->getAlias() ?: $this->resolveAttributeName($attribute);
+        $message          = $validator->getMessage(); // default rule message
+        $messageKeys      = [
+            $attributeKey . $this->messageSeparator . $ruleKey,
             $attributeKey,
             $ruleKey
         ];
@@ -412,8 +419,8 @@ class Validation
             //     $ruleKey
             // ];
             $primaryAttributeKey = $primaryAttribute->getKey();
-            array_splice($messageKeys, 1, 0, $primaryAttributeKey.$this->messageSeparator.$ruleKey);
-            array_splice($messageKeys, 3, 0, $primaryAttributeKey);
+            \array_splice($messageKeys, 1, 0, $primaryAttributeKey . $this->messageSeparator . $ruleKey);
+            \array_splice($messageKeys, 3, 0, $primaryAttributeKey);
         }
 
         foreach ($messageKeys as $key) {
@@ -424,14 +431,14 @@ class Validation
         }
 
         // Replace message params
-        $vars = array_merge($params, [
+        $vars = \array_merge($params, [
             'attribute' => $alias,
-            'value' => $value,
+            'value'     => $value,
         ]);
 
         foreach ($vars as $key => $value) {
             $value = $this->stringify($value);
-            $message = str_replace(':'.$key, $value, $message);
+            $message = \str_replace(':' . $key, $value, $message);
         }
 
         // Replace key indexes
@@ -441,11 +448,11 @@ class Validation
                 "[{$pathIndex}]" => $index,
             ];
 
-            if (is_numeric($index)) {
+            if (\is_numeric($index)) {
                 $replacers["{{$pathIndex}}"] = $index + 1;
             }
 
-            $message = str_replace(array_keys($replacers), array_values($replacers), $message);
+            $message = \str_replace(\array_keys($replacers), \array_values($replacers), $message);
         }
 
         return $message;
@@ -459,10 +466,10 @@ class Validation
      */
     protected function stringify($value): string
     {
-        if (is_string($value) || is_numeric($value)) {
+        if (\is_string($value) || \is_numeric($value)) {
             return $value;
-        } elseif (is_array($value) || is_object($value)) {
-            return json_encode($value);
+        } elseif (\is_array($value) || \is_object($value)) {
+            return \json_encode($value);
         } else {
             return '';
         }
@@ -476,8 +483,8 @@ class Validation
      */
     protected function resolveRules($rules): array
     {
-        if (is_string($rules)) {
-            $rules = explode('|', $rules);
+        if (\is_string($rules)) {
+            $rules = \explode('|', $rules);
         }
 
         $resolvedRules = [];
@@ -489,16 +496,16 @@ class Validation
             }
             $params = [];
 
-            if (is_string($rule)) {
-                list($rulename, $params) = $this->parseRule($rule);
-                $validator = call_user_func_array($validatorFactory, array_merge([$rulename], $params));
+            if (\is_string($rule)) {
+                list($ruleName, $params) = $this->parseRule($rule);
+                $validator = \call_user_func_array($validatorFactory, \array_merge([$ruleName], $params));
             } elseif ($rule instanceof Rule) {
                 $validator = $rule;
             } elseif ($rule instanceof Closure) {
-                $validator = call_user_func_array($validatorFactory, ['callback', $rule]);
+                $validator = \call_user_func_array($validatorFactory, ['callback', $rule]);
             } else {
-                $ruleName = is_object($rule) ? get_class($rule) : gettype($rule);
-                $message = "Rule must be a string, Closure or '".Rule::class."' instance. ".$ruleName." given";
+                $ruleName = \is_object($rule) ? \get_class($rule) : \gettype($rule);
+                $message  = "Rule must be a string, Closure or '" . Rule::class . "' instance. " . $ruleName . " given";
                 throw new \Exception();
             }
 
@@ -516,11 +523,12 @@ class Validation
      */
     protected function parseRule(string $rule): array
     {
-        $exp = explode(':', $rule, 2);
+        $exp = \explode(':', $rule, 2);
         $rulename = $exp[0];
         if ($rulename !== 'regex') {
-            $params = isset($exp[1])? explode(',', $exp[1]) : [];
+            $params = isset($exp[1]) ? \explode(',', $exp[1]) : [];
         } else {
+            // TODO is maby null
             $params = [$exp[1]];
         }
 
@@ -547,7 +555,7 @@ class Validation
      */
     public function getAlias(string $attributeKey)
     {
-        return isset($this->aliases[$attributeKey])? $this->aliases[$attributeKey] : null;
+        return $this->aliases[$attributeKey] ?? null;
     }
 
     /**
@@ -558,7 +566,7 @@ class Validation
      */
     public function setAliases(array $aliases)
     {
-        $this->aliases = array_merge($this->aliases, $aliases);
+        $this->aliases = \array_merge($this->aliases, $aliases);
     }
 
     /**
@@ -568,7 +576,7 @@ class Validation
      */
     public function passes(): bool
     {
-        return $this->errors->count() == 0;
+        return $this->errors->count() === 0;
     }
 
     /**
@@ -635,9 +643,9 @@ class Validation
     {
         $resolvedInputs = [];
         foreach ($inputs as $key => $rules) {
-            $exp = explode(':', $key);
+            $exp = \explode(':', $key);
 
-            if (count($exp) > 1) {
+            if (\count($exp) > 1) {
                 // set attribute alias
                 $this->aliases[$exp[0]] = $exp[1];
             }
@@ -655,7 +663,7 @@ class Validation
      */
     public function getValidatedData(): array
     {
-        return array_merge($this->validData, $this->invalidData);
+        return \array_merge($this->validData, $this->invalidData);
     }
 
     /**

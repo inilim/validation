@@ -2,6 +2,8 @@
 
 namespace Rakit\Validation;
 
+use Rakit\Validation\Rule;
+
 class Validator
 {
     use Traits\TranslationsTrait, Traits\MessagesTrait;
@@ -9,7 +11,7 @@ class Validator
     /** @var array */
     protected $translations = [];
 
-    /** @var array */
+    /** @var array<string,Rule|callable():Rule|class-string<Rule>> */
     protected $validators = [];
 
     /** @var bool */
@@ -27,31 +29,111 @@ class Validator
     public function __construct(array $messages = [])
     {
         $this->messages = $messages;
-        $this->registerBaseValidators();
+        // $this->registerBaseValidators();
     }
 
     /**
      * Register or override existing validator
      *
      * @param mixed $key
-     * @param \Rakit\Validation\Rule $rule
+     * @param Rule|callable():Rule|class-string<Rule> $rule
      * @return void
      */
-    public function setValidator(string $key, Rule $rule)
+    public function setValidator(string $key, $rule)
     {
         $this->validators[$key] = $rule;
-        $rule->setKey($key);
     }
 
     /**
      * Get validator object from given $key
      *
-     * @param mixed $key
-     * @return mixed
+     * @return Rule|null
      */
-    public function getValidator($key)
+    public function getValidator(string $key)
     {
-        return isset($this->validators[$key]) ? $this->validators[$key] : null;
+        $rule = $this->validators[$key] ?? $this->getBaseValidator($key);
+
+        if ($rule === null) return null;
+
+        if (\is_object($rule)) {
+            if ($rule instanceof Rule) {
+                $rule->setKey($key);
+                return $rule;
+            }
+
+            if ($rule instanceof \Closure) {
+                $rule = $rule->__invoke();
+            }
+
+            if ($rule instanceof Rule) {
+                $rule->setKey($key);
+                return $this->validators[$key] = $rule;
+            }
+
+            throw new \InvalidArgumentException(\sprintf(
+                'object "%s" not rule',
+                $key
+            ));
+        }
+
+        if (\is_string($rule)) {
+            if (!\class_exists($rule, true)) {
+                throw new RuleNotFoundException(\sprintf(
+                    'class rule "%s" not found',
+                    $key
+                ));
+            }
+
+            $rule = new $rule;
+
+            if ($rule instanceof Rule) {
+                $rule->setKey($key);
+                return $this->validators[$key] = $rule;
+            }
+
+            throw new \InvalidArgumentException(\sprintf(
+                'class rule "%s" not rule',
+                $key
+            ));
+        }
+
+        if (\is_callable($rule)) {
+            $rule = \call_user_func($rule);
+
+            if ($rule instanceof Rule) {
+                $rule->setKey($key);
+                return $this->validators[$key] = $rule;
+            }
+
+            throw new \InvalidArgumentException(\sprintf(
+                'class rule "%s" not rule',
+                $key
+            ));
+        }
+
+        throw new \InvalidArgumentException(\sprintf(
+            'added incorect rule by "%s"',
+            $key
+        ));
+    }
+
+    /**
+     * Given $ruleName and $rule to add new validator
+     *
+     * @param string $ruleName
+     * @param Rule|callable():Rule|class-string<Rule> $rule
+     * @return void
+     */
+    public function addValidator(string $ruleName, $rule)
+    {
+        // if (!$this->allowRuleOverride && \array_key_exists($ruleName, $this->validators)) {
+        if (!$this->allowRuleOverride && $this->getBaseValidator($ruleName) !== null) {
+            throw new RuleQuashException(
+                "You cannot override a built in rule. You have to rename your rule"
+            );
+        }
+
+        $this->setValidator($ruleName, $rule);
     }
 
     /**
@@ -64,23 +146,25 @@ class Validator
      */
     public function validate(array $inputs, array $rules, array $messages = []): Validation
     {
-        $validation = $this->make($inputs, $rules, $messages);
-        $validation->validate();
-        return $validation;
+        return $this->make($inputs, $rules, $messages)->validate();
     }
 
     /**
      * Given $inputs, $rules and $messages to make the Validation class instance
      *
-     * @param array $inputs
+     * @param mixed[] $inputs
      * @param array $rules
      * @param array $messages
      * @return Validation
      */
     public function make(array $inputs, array $rules, array $messages = []): Validation
     {
-        $messages = array_merge($this->messages, $messages);
-        $validation = new Validation($this, $inputs, $rules, $messages);
+        $validation = new Validation(
+            $this,
+            $inputs,
+            $rules,
+            \array_merge($this->messages, $messages)
+        );
         $validation->setTranslations($this->getTranslations());
 
         return $validation;
@@ -95,12 +179,12 @@ class Validator
      */
     public function __invoke(string $rule): Rule
     {
-        $args = func_get_args();
-        $rule = array_shift($args);
-        $params = $args;
+        $args      = \func_get_args();
+        $rule      = \array_shift($args);
+        $params    = $args;
         $validator = $this->getValidator($rule);
         if (!$validator) {
-            throw new RuleNotFoundException("Validator '{$rule}' is not registered", 1);
+            throw new RuleNotFoundException('Validator ' . $rule . ' is not registered', 1);
         }
 
         $clonedValidator = clone $validator;
@@ -110,81 +194,109 @@ class Validator
     }
 
     /**
-     * Initialize base validators array
-     *
-     * @return void
+     * @return null|class-string<Rule>
      */
-    protected function registerBaseValidators()
+    protected function getBaseValidator(string $key)
     {
-        $baseValidator = [
-            'required'                  => new Rules\Required,
-            'required_if'               => new Rules\RequiredIf,
-            'required_unless'           => new Rules\RequiredUnless,
-            'required_with'             => new Rules\RequiredWith,
-            'required_without'          => new Rules\RequiredWithout,
-            'required_with_all'         => new Rules\RequiredWithAll,
-            'required_without_all'      => new Rules\RequiredWithoutAll,
-            'email'                     => new Rules\Email,
-            'alpha'                     => new Rules\Alpha,
-            'numeric'                   => new Rules\Numeric,
-            'alpha_num'                 => new Rules\AlphaNum,
-            'alpha_dash'                => new Rules\AlphaDash,
-            'alpha_spaces'              => new Rules\AlphaSpaces,
-            'in'                        => new Rules\In,
-            'not_in'                    => new Rules\NotIn,
-            'min'                       => new Rules\Min,
-            'max'                       => new Rules\Max,
-            'between'                   => new Rules\Between,
-            'url'                       => new Rules\Url,
-            'integer'                   => new Rules\Integer,
-            'boolean'                   => new Rules\Boolean,
-            'ip'                        => new Rules\Ip,
-            'ipv4'                      => new Rules\Ipv4,
-            'ipv6'                      => new Rules\Ipv6,
-            'extension'                 => new Rules\Extension,
-            'array'                     => new Rules\TypeArray,
-            'same'                      => new Rules\Same,
-            'regex'                     => new Rules\Regex,
-            'date'                      => new Rules\Date,
-            'accepted'                  => new Rules\Accepted,
-            'present'                   => new Rules\Present,
-            'different'                 => new Rules\Different,
-            'uploaded_file'             => new Rules\UploadedFile,
-            'mimes'                     => new Rules\Mimes,
-            'callback'                  => new Rules\Callback,
-            'before'                    => new Rules\Before,
-            'after'                     => new Rules\After,
-            'lowercase'                 => new Rules\Lowercase,
-            'uppercase'                 => new Rules\Uppercase,
-            'json'                      => new Rules\Json,
-            'digits'                    => new Rules\Digits,
-            'digits_between'            => new Rules\DigitsBetween,
-            'defaults'                  => new Rules\Defaults,
-            'default'                   => new Rules\Defaults, // alias of defaults
-            'nullable'                  => new Rules\Nullable,
-        ];
+        switch ($key) {
+            case 'required':
+                return Rules\Required::class;
+            case 'nullable':
+                return Rules\Nullable::class;
+            case 'required_if':
+                return Rules\RequiredIf::class;
+            case 'email':
+                return Rules\Email::class;
+            case 'numeric':
+                return Rules\Numeric::class;
+            case 'in':
+                return Rules\In::class;
+            case 'not_in':
+                return Rules\NotIn::class;
+            case 'min':
+                return Rules\Min::class;
+            case 'max':
+                return Rules\Max::class;
+            case 'between':
+                return Rules\Between::class;
+            case 'url':
+                return Rules\Url::class;
+            case 'integer':
+                return Rules\Integer::class;
+            case 'boolean':
+                return Rules\Boolean::class;
+            case 'array':
+                return Rules\TypeArray::class;
+            case 'same':
+                return Rules\Same::class;
+            case 'regex':
+                return Rules\Regex::class;
+            case 'date':
+                return Rules\Date::class;
+            case 'accepted':
+                return Rules\Accepted::class;
+            case 'before':
+                return Rules\Before::class;
+            case 'after':
+                return Rules\After::class;
+            case 'lowercase':
+                return Rules\Lowercase::class;
+            case 'uppercase':
+                return Rules\Uppercase::class;
+            case 'json':
+                return Rules\Json::class;
+            case 'digits':
+                return Rules\Digits::class;
+            case 'digits_between':
+                return Rules\DigitsBetween::class;
+            case 'defaults':
+                return Rules\Defaults::class;
+            case 'default':
+                return Rules\Defaults::class; // alias of defaults
 
-        foreach ($baseValidator as $key => $validator) {
-            $this->setValidator($key, $validator);
+            case 'ip':
+                return Rules\Ip::class;
+            case 'ipv4':
+                return Rules\Ipv4::class;
+            case 'ipv6':
+                return Rules\Ipv6::class;
+            case 'extension':
+                return Rules\Extension::class;
+
+            case 'present':
+                return Rules\Present::class;
+            case 'different':
+                return Rules\Different::class;
+            case 'uploaded_file':
+                return Rules\UploadedFile::class;
+            case 'mimes':
+                return Rules\Mimes::class;
+            case 'callback':
+                return Rules\Callback::class;
+
+            case 'required_unless':
+                return Rules\RequiredUnless::class;
+            case 'required_with':
+                return Rules\RequiredWith::class;
+            case 'required_without':
+                return Rules\RequiredWithout::class;
+            case 'required_with_all':
+                return Rules\RequiredWithAll::class;
+            case 'required_without_all':
+                return Rules\RequiredWithoutAll::class;
+
+            case 'alpha':
+                return Rules\Alpha::class;
+            case 'alpha_num':
+                return Rules\AlphaNum::class;
+            case 'alpha_dash':
+                return Rules\AlphaDash::class;
+            case 'alpha_spaces':
+                return Rules\AlphaSpaces::class;
+
+            default:
+                return null;
         }
-    }
-
-    /**
-     * Given $ruleName and $rule to add new validator
-     *
-     * @param string $ruleName
-     * @param \Rakit\Validation\Rule $rule
-     * @return void
-     */
-    public function addValidator(string $ruleName, Rule $rule)
-    {
-        if (!$this->allowRuleOverride && array_key_exists($ruleName, $this->validators)) {
-            throw new RuleQuashException(
-                "You cannot override a built in rule. You have to rename your rule"
-            );
-        }
-
-        $this->setValidator($ruleName, $rule);
     }
 
     /**

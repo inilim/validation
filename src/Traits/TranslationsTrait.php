@@ -28,7 +28,7 @@ trait TranslationsTrait
      */
     public function setTranslations(array $translations)
     {
-        $this->translations = array_merge($this->translations, $translations);
+        $this->translations = \array_merge($this->translations, $translations);
     }
 
     /**
@@ -39,7 +39,7 @@ trait TranslationsTrait
      */
     public function getTranslation(string $key): string
     {
-        return array_key_exists($key, $this->translations) ? $this->translations[$key] : $key;
+        return \array_key_exists($key, $this->translations) ? $this->translations[$key] : $key;
     }
 
     /**

@@ -18,6 +18,6 @@ class Integer extends Rule
      */
     public function check($value): bool
     {
-        return filter_var($value, FILTER_VALIDATE_INT) !== false;
+        return \filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
 }

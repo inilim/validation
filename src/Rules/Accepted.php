@@ -20,7 +20,6 @@ class Accepted extends Rule
      */
     public function check($value): bool
     {
-        $acceptables = ['yes', 'on', '1', 1, true, 'true'];
-        return in_array($value, $acceptables, true);
+        return \in_array($value, ['yes', 'on', '1', 1, true, 'true'], true);
     }
 }

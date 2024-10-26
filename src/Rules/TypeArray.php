@@ -18,6 +18,6 @@ class TypeArray extends Rule
      */
     public function check($value): bool
     {
-        return is_array($value);
+        return \is_array($value);
     }
 }

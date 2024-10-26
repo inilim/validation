@@ -40,13 +40,14 @@ class Callback extends Rule
         $callback = $this->parameter('callback');
         if (false === $callback instanceof Closure) {
             $key = $this->attribute->getKey();
-            throw new InvalidArgumentException("Callback rule for '{$key}' is not callable.");
+            throw new InvalidArgumentException('Callback rule for "' . $key . '" is not callable.');
         }
 
-        $callback = $callback->bindTo($this);
+        // TODO WHY BIND?????????????
+        $callback       = $callback->bindTo($this);
         $invalidMessage = $callback($value);
 
-        if (is_string($invalidMessage)) {
+        if (\is_string($invalidMessage)) {
             $this->setMessage($invalidMessage);
             return false;
         } elseif (false === $invalidMessage) {

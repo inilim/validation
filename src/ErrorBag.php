@@ -43,7 +43,7 @@ class ErrorBag
      */
     public function count(): int
     {
-        return count($this->all());
+        return \count($this->all());
     }
 
     /**
@@ -57,9 +57,9 @@ class ErrorBag
         list($key, $ruleName) = $this->parsekey($key);
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
-            return count(Helper::arrayDot($messages)) > 0;
+            return \count(Helper::arrayDot($messages)) > 0;
         } else {
-            $messages = isset($this->messages[$key])? $this->messages[$key] : null;
+            $messages = isset($this->messages[$key]) ? $this->messages[$key] : null;
 
             if (!$ruleName) {
                 return !empty($messages);
@@ -81,18 +81,18 @@ class ErrorBag
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
             $flattenMessages = Helper::arrayDot($messages);
-            return array_shift($flattenMessages);
+            return \array_shift($flattenMessages);
         } else {
-            $keyMessages = isset($this->messages[$key])? $this->messages[$key] : [];
+            $keyMessages = isset($this->messages[$key]) ? $this->messages[$key] : [];
 
             if (empty($keyMessages)) {
                 return null;
             }
 
             if ($ruleName) {
-                return isset($keyMessages[$ruleName])? $keyMessages[$ruleName] : null;
+                return isset($keyMessages[$ruleName]) ? $keyMessages[$ruleName] : null;
             } else {
-                return array_shift($keyMessages);
+                return \array_shift($keyMessages);
             }
         }
     }
@@ -116,7 +116,7 @@ class ErrorBag
                 }
             }
         } else {
-            $keyMessages = isset($this->messages[$key])? $this->messages[$key] : [];
+            $keyMessages = isset($this->messages[$key]) ? $this->messages[$key] : [];
             foreach ($keyMessages as $rule => $message) {
                 if ($ruleName and $ruleName != $rule) {
                     continue;
@@ -185,9 +185,9 @@ class ErrorBag
      */
     protected function parseKey(string $key): array
     {
-        $expl = explode(':', $key, 2);
+        $expl = \explode(':', $key, 2);
         $key = $expl[0];
-        $ruleName = isset($expl[1])? $expl[1] : null;
+        $ruleName = isset($expl[1]) ? $expl[1] : null;
         return [$key, $ruleName];
     }
 
@@ -199,7 +199,7 @@ class ErrorBag
      */
     protected function isWildcardKey(string $key): bool
     {
-        return false !== strpos($key, '*');
+        return false !== \strpos($key, '*');
     }
 
     /**
@@ -212,13 +212,13 @@ class ErrorBag
     protected function filterMessagesForWildcardKey(string $key, $ruleName = null): array
     {
         $messages = $this->messages;
-        $pattern = preg_quote($key, '#');
-        $pattern = str_replace('\*', '.*', $pattern);
+        $pattern = \preg_quote($key, '#');
+        $pattern = \str_replace('\*', '.*', $pattern);
 
         $filteredMessages = [];
 
         foreach ($messages as $k => $keyMessages) {
-            if ((bool) preg_match('#^'.$pattern.'\z#u', $k) === false) {
+            if ((bool) \preg_match('#^' . $pattern . '\z#u', $k) === false) {
                 continue;
             }
 
@@ -242,6 +242,6 @@ class ErrorBag
      */
     protected function formatMessage(string $message, string $format): string
     {
-        return str_replace(':message', $message, $format);
+        return \str_replace(':message', $message, $format);
     }
 }

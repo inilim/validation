@@ -61,7 +61,7 @@ abstract class Rule
      */
     public function getKey()
     {
-        return $this->key ?: get_class($this);
+        return $this->key ?: \get_class($this);
     }
 
     /**
@@ -103,7 +103,7 @@ abstract class Rule
      */
     public function setParameters(array $params): Rule
     {
-        $this->params = array_merge($this->params, $params);
+        $this->params = \array_merge($this->params, $params);
         return $this;
     }
 
@@ -128,12 +128,16 @@ abstract class Rule
      */
     public function fillParameters(array $params): Rule
     {
+        if (!$params) return $this;
+
+        \reset($params);
         foreach ($this->fillableParams as $key) {
-            if (empty($params)) {
-                break;
-            }
-            $this->params[$key] = array_shift($params);
+            $idx = \key($params);
+            // $this->params[$key] = \array_shift($params);
+            $this->params[$key] = $idx === null ? null : $params[$idx];
+            \next($params);
         }
+
         return $this;
     }
 
@@ -145,7 +149,7 @@ abstract class Rule
      */
     public function parameter(string $key)
     {
-        return isset($this->params[$key])? $this->params[$key] : null;
+        return $this->params[$key] ?? null;
     }
 
     /**
@@ -224,8 +228,9 @@ abstract class Rule
     {
         foreach ($params as $param) {
             if (!isset($this->params[$param])) {
-                $rule = $this->getKey();
-                throw new MissingRequiredParameterException("Missing required parameter '{$param}' on rule '{$rule}'");
+                throw new MissingRequiredParameterException(
+                    'Missing required parameter "' . $param . '" on rule "' . $this->getKey() . '"'
+                );
             }
         }
     }
