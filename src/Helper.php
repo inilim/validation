@@ -4,7 +4,6 @@ namespace Rakit\Validation;
 
 class Helper
 {
-
     /**
      * Determine if a given string matches a given pattern.
      * Adapted from: https://github.com/illuminate/support/blob/v5.3.23/Str.php#L119
@@ -203,7 +202,7 @@ class Helper
      */
     public static function snakeCase(string $value, string $delimiter = '_'): string
     {
-        if (! \ctype_lower($value)) {
+        if (!\ctype_lower($value)) {
             $value = \preg_replace('/\s+/u', '', \ucwords($value));
             $value = \strtolower(\preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
         }
@@ -227,7 +226,7 @@ class Helper
 
         $last = \array_pop($pieces);
 
-        switch (\count($pieces)) {
+        switch (\sizeof($pieces)) {
             case 0:
                 return $last ?: '';
             case 1:

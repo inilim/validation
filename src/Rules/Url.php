@@ -18,7 +18,7 @@ class Url extends Rule
      */
     public function fillParameters(array $params): Rule
     {
-        if (\count($params) == 1 and \is_array($params[0])) {
+        if (\sizeof($params) == 1 and \is_array($params[0])) {
             $params = $params[0];
         }
         return $this->forScheme($params);

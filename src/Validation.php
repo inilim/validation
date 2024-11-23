@@ -35,6 +35,9 @@ class Validation
     /** @var ErrorBag */
     public $errors;
 
+    /** @var Required */
+    public $requiredRule;
+
     /**
      * Constructor
      *
@@ -50,10 +53,11 @@ class Validation
         array $rules,
         array $messages = []
     ) {
-        $this->validator = $validator;
-        $this->inputs    = $this->resolveInputAttributes($inputs);
-        $this->messages  = $messages;
-        $this->errors    = new ErrorBag;
+        $this->validator    = $validator;
+        $this->inputs       = $this->resolveInputAttributes($inputs);
+        $this->messages     = $messages;
+        $this->errors       = new ErrorBag;
+        $this->requiredRule = new Required;
         foreach ($rules as $attributeKey => $rules) {
             $this->addAttribute($attributeKey, $rules);
         }
@@ -102,7 +106,7 @@ class Validation
         }
 
         // Before validation hooks
-        foreach ($this->attributes as $attributeKey => $attribute) {
+        foreach ($this->attributes as $attribute) {
             foreach ($attribute->getRules() as $rule) {
                 if ($rule instanceof BeforeValidate) {
                     $rule->beforeValidate();
@@ -110,7 +114,7 @@ class Validation
             }
         }
 
-        foreach ($this->attributes as $attributeKey => $attribute) {
+        foreach ($this->attributes as $attribute) {
             $this->validateAttribute($attribute);
         }
 
@@ -350,7 +354,7 @@ class Validation
      */
     protected function isEmptyValue($value): bool
     {
-        return false === (new Required)->check($value, []);
+        return false === $this->requiredRule->check($value);
     }
 
     /**
@@ -375,15 +379,16 @@ class Validation
      */
     protected function resolveAttributeName(Attribute $attribute): string
     {
+        $key = $attribute->getKey();
         $primaryAttribute = $attribute->getPrimaryAttribute();
-        if (isset($this->aliases[$attribute->getKey()])) {
-            return $this->aliases[$attribute->getKey()];
+        if (isset($this->aliases[$key])) {
+            return $this->aliases[$key];
         } elseif ($primaryAttribute and isset($this->aliases[$primaryAttribute->getKey()])) {
             return $this->aliases[$primaryAttribute->getKey()];
         } elseif ($this->validator->isUsingHumanizedKey()) {
             return $attribute->getHumanizedKey();
         } else {
-            return $attribute->getKey();
+            return $key;
         }
     }
 
@@ -523,7 +528,7 @@ class Validation
      */
     protected function parseRule(string $rule): array
     {
-        $exp = \explode(':', $rule, 2);
+        $exp      = \explode(':', $rule, 2);
         $rulename = $exp[0];
         if ($rulename !== 'regex') {
             $params = isset($exp[1]) ? \explode(',', $exp[1]) : [];
@@ -645,7 +650,7 @@ class Validation
         foreach ($inputs as $key => $rules) {
             $exp = \explode(':', $key);
 
-            if (\count($exp) > 1) {
+            if (\sizeof($exp) > 1) {
                 // set attribute alias
                 $this->aliases[$exp[0]] = $exp[1];
             }

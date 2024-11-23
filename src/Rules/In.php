@@ -22,7 +22,7 @@ class In extends Rule
      */
     public function fillParameters(array $params): Rule
     {
-        if (count($params) == 1 && is_array($params[0])) {
+        if (\sizeof($params) == 1 && \is_array($params[0])) {
             $params = $params[0];
         }
         $this->params['allowed_values'] = $params;
@@ -56,6 +56,6 @@ class In extends Rule
         $allowedValuesText = Helper::join(Helper::wraps($allowedValues, "'"), ', ', ", {$or} ");
         $this->setParameterText('allowed_values', $allowedValuesText);
 
-        return in_array($value, $allowedValues, $this->strict);
+        return \in_array($value, $allowedValues, $this->strict);
     }
 }

@@ -77,7 +77,7 @@ trait FileTrait
             // name.foo.bar -> foo.bar.name
             $splits = \explode('.', $key);
             $firstKey = \array_shift($splits);
-            $key = \count($splits) ? \implode('.', $splits) . '.' . $firstKey : $firstKey;
+            $key = \sizeof($splits) ? \implode('.', $splits) . '.' . $firstKey : $firstKey;
 
             Helper::arraySet($results, $key, $val);
         }

@@ -30,7 +30,7 @@ trait SizeTrait
         } elseif ($this->isUploadedFileValue($value)) {
             return (float) $value['size'];
         } elseif (\is_array($value)) {
-            return (float) \count($value);
+            return (float) \sizeof($value);
         } else {
             return false;
         }

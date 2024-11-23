@@ -92,7 +92,7 @@ class Validator
             }
 
             throw new \InvalidArgumentException(\sprintf(
-                'class rule "%s" not rule',
+                'class "%s" not rule',
                 $key
             ));
         }
@@ -106,7 +106,7 @@ class Validator
             }
 
             throw new \InvalidArgumentException(\sprintf(
-                'class rule "%s" not rule',
+                'class "%s" not rule',
                 $key
             ));
         }
@@ -121,7 +121,7 @@ class Validator
      * Given $ruleName and $rule to add new validator
      *
      * @param string $ruleName
-     * @param Rule|callable():Rule|class-string<Rule> $rule
+     * @param Rule|callable():Rule|class-string<Rule> $rule recommend class-string or callable
      * @return void
      */
     public function addValidator(string $ruleName, $rule)
@@ -198,6 +198,7 @@ class Validator
      */
     protected function getBaseValidator(string $key)
     {
+        // if someone thinks that it is better to make an array here, then this is not the case
         switch ($key) {
             case 'required':
                 return Rules\Required::class;

@@ -43,7 +43,7 @@ class ErrorBag
      */
     public function count(): int
     {
-        return \count($this->all());
+        return \sizeof($this->all());
     }
 
     /**
@@ -57,7 +57,7 @@ class ErrorBag
         list($key, $ruleName) = $this->parsekey($key);
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
-            return \count(Helper::arrayDot($messages)) > 0;
+            return \sizeof(Helper::arrayDot($messages)) > 0;
         } else {
             $messages = isset($this->messages[$key]) ? $this->messages[$key] : null;
 
@@ -159,9 +159,9 @@ class ErrorBag
         $results = [];
         foreach ($messages as $key => $keyMessages) {
             if ($dotNotation) {
-                $results[$key] = $this->formatMessage(array_shift($messages[$key]), $format);
+                $results[$key] = $this->formatMessage(\array_shift($messages[$key]), $format);
             } else {
-                Helper::arraySet($results, $key, $this->formatMessage(array_shift($messages[$key]), $format));
+                Helper::arraySet($results, $key, $this->formatMessage(\array_shift($messages[$key]), $format));
             }
         }
         return $results;

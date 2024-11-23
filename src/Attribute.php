@@ -230,7 +230,7 @@ class Attribute
      */
     public function isArrayAttribute(): bool
     {
-        return \count($this->getKeyIndexes()) > 0;
+        return \sizeof($this->getKeyIndexes()) > 0;
     }
 
     /**
@@ -253,9 +253,9 @@ class Attribute
     {
         $indexes        = $this->getKeyIndexes();
         $keys           = \explode('*', $key);
-        $countAsterisks = \count($keys) - 1;
-        if (\count($indexes) < $countAsterisks) {
-            $indexes = \array_merge($indexes, \array_fill(0, $countAsterisks - \count($indexes), "*"));
+        $countAsterisks = \sizeof($keys) - 1;
+        if (\sizeof($indexes) < $countAsterisks) {
+            $indexes = \array_merge($indexes, \array_fill(0, $countAsterisks - \sizeof($indexes), "*"));
         }
         $args = \array_merge([\str_replace('*', '%s', $key)], $indexes);
 
