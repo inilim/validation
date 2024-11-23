@@ -4,6 +4,10 @@ namespace Rakit\Validation;
 
 use Rakit\Validation\Rule;
 
+/**
+ * @psalm-type TypeVarRuleInstraction = string|array<string|\Closure|Rule>
+ * @psalm-type TypeVarRulesInstraction = array<string,TypeVarRuleInstraction>
+ */
 class Validator
 {
     use Traits\TranslationsTrait, Traits\MessagesTrait;
@@ -12,7 +16,7 @@ class Validator
     protected $translations = [];
 
     /** @var array<string,Rule|callable():Rule|class-string<Rule>> */
-    protected $validators = [];
+    protected $rules = [];
 
     /** @var bool */
     protected $allowRuleOverride = false;
@@ -29,19 +33,6 @@ class Validator
     public function __construct(array $messages = [])
     {
         $this->messages = $messages;
-        // $this->registerBaseValidators();
-    }
-
-    /**
-     * Register or override existing validator
-     *
-     * @param mixed $key
-     * @param Rule|callable():Rule|class-string<Rule> $rule
-     * @return void
-     */
-    public function setValidator(string $key, $rule)
-    {
-        $this->validators[$key] = $rule;
     }
 
     /**
@@ -49,9 +40,9 @@ class Validator
      *
      * @return Rule|null
      */
-    public function getValidator(string $key)
+    public function getRule(string $key)
     {
-        $rule = $this->validators[$key] ?? $this->getBaseValidator($key);
+        $rule = $this->rules[$key] ?? $this->getBaseRule($key);
 
         if ($rule === null) return null;
 
@@ -67,7 +58,7 @@ class Validator
 
             if ($rule instanceof Rule) {
                 $rule->setKey($key);
-                return $this->validators[$key] = $rule;
+                return $this->rules[$key] = $rule;
             }
 
             throw new \InvalidArgumentException(\sprintf(
@@ -88,7 +79,7 @@ class Validator
 
             if ($rule instanceof Rule) {
                 $rule->setKey($key);
-                return $this->validators[$key] = $rule;
+                return $this->rules[$key] = $rule;
             }
 
             throw new \InvalidArgumentException(\sprintf(
@@ -102,7 +93,7 @@ class Validator
 
             if ($rule instanceof Rule) {
                 $rule->setKey($key);
-                return $this->validators[$key] = $rule;
+                return $this->rules[$key] = $rule;
             }
 
             throw new \InvalidArgumentException(\sprintf(
@@ -118,51 +109,50 @@ class Validator
     }
 
     /**
-     * Given $ruleName and $rule to add new validator
+     * Given $name and $rule to add new validator
      *
-     * @param string $ruleName
-     * @param Rule|callable():Rule|class-string<Rule> $rule recommend class-string or callable
-     * @return void
+     * @param Rule|class-string<Rule>|callable():Rule $rule recommend class-string or callable
      */
-    public function addValidator(string $ruleName, $rule)
+    public function addRule(string $name, $rule): self
     {
-        // if (!$this->allowRuleOverride && \array_key_exists($ruleName, $this->validators)) {
-        if (!$this->allowRuleOverride && $this->getBaseValidator($ruleName) !== null) {
+        if (!$this->allowRuleOverride && $this->getBaseRule($name) !== null) {
             throw new RuleQuashException(
                 "You cannot override a built in rule. You have to rename your rule"
             );
         }
 
-        $this->setValidator($ruleName, $rule);
+        $this->rules[$name] = $rule;
+
+        return $this;
     }
 
     /**
      * Validate $inputs
      *
      * @param array $inputs
-     * @param array $rules
+     * @param TypeVarRulesInstraction $rulesInstruction
      * @param array $messages
      * @return Validation
      */
-    public function validate(array $inputs, array $rules, array $messages = []): Validation
+    public function validate(array $inputs, array $rulesInstruction, array $messages = []): Validation
     {
-        return $this->make($inputs, $rules, $messages)->validate();
+        return $this->make($inputs, $rulesInstruction, $messages)->validate();
     }
 
     /**
-     * Given $inputs, $rules and $messages to make the Validation class instance
+     * Given $inputs, $rulesInstruction and $messages to make the Validation class instance
      *
      * @param mixed[] $inputs
-     * @param array $rules
+     * @param TypeVarRulesInstraction $rulesInstruction
      * @param array $messages
      * @return Validation
      */
-    public function make(array $inputs, array $rules, array $messages = []): Validation
+    public function make(array $inputs, array $rulesInstruction, array $messages = []): Validation
     {
         $validation = new Validation(
             $this,
             $inputs,
-            $rules,
+            $rulesInstruction,
             \array_merge($this->messages, $messages)
         );
         $validation->setTranslations($this->getTranslations());
@@ -173,30 +163,33 @@ class Validator
     /**
      * Magic invoke method to make Rule instance
      *
-     * @param string $rule
      * @return Rule
      * @throws RuleNotFoundException
      */
-    public function __invoke(string $rule): Rule
+    public function __invoke(): Rule
     {
-        $args      = \func_get_args();
-        $rule      = \array_shift($args);
-        $params    = $args;
-        $validator = $this->getValidator($rule);
-        if (!$validator) {
-            throw new RuleNotFoundException('Validator ' . $rule . ' is not registered', 1);
+        $args     = \func_get_args();
+        /** @var array<string|\Closure> $args */
+        $ruleName = \array_shift($args);
+        $params   = $args;
+        $rule     = $this->getRule($ruleName);
+        if (!$rule) {
+            throw new RuleNotFoundException(\sprintf(
+                'Validator "%s" is not registered',
+                $ruleName
+            ), 1);
         }
 
-        $clonedValidator = clone $validator;
-        $clonedValidator->fillParameters($params);
+        $clonedRule = clone $rule;
+        $clonedRule->fillParameters($params);
 
-        return $clonedValidator;
+        return $clonedRule;
     }
 
     /**
      * @return null|class-string<Rule>
      */
-    protected function getBaseValidator(string $key)
+    protected function getBaseRule(string $key)
     {
         // if someone thinks that it is better to make an array here, then this is not the case
         switch ($key) {

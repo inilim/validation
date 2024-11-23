@@ -72,7 +72,7 @@ class Url extends Rule
      */
     public function validateBasic($value): bool
     {
-        return \filter_var($value, FILTER_VALIDATE_URL) !== false;
+        return \filter_var($value, \FILTER_VALIDATE_URL) !== false;
     }
 
     /**

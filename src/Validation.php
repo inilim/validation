@@ -3,21 +3,27 @@
 namespace Rakit\Validation;
 
 use Closure;
-use Rakit\Validation\Rules\Interfaces\BeforeValidate;
-use Rakit\Validation\Rules\Interfaces\ModifyValue;
+use Rakit\Validation\Rule;
+use Rakit\Validation\Validator;
 use Rakit\Validation\Rules\Required;
+use Rakit\Validation\Rules\Interfaces\ModifyValue;
+use Rakit\Validation\Rules\Interfaces\BeforeValidate;
 
+/**
+ * @psalm-import-type TypeVarRulesInstruction from Validator
+ * @psalm-import-type TypeVarRuleInstraction from Validator
+ */
 class Validation
 {
     use Traits\TranslationsTrait, Traits\MessagesTrait;
 
-    /** @var mixed */
+    /** @var Validator */
     protected $validator;
 
     /** @var array */
     protected $inputs = [];
 
-    /** @var array */
+    /** @var Attribute[] */
     protected $attributes = [];
 
     /** @var array */
@@ -33,24 +39,23 @@ class Validation
     protected $invalidData = [];
 
     /** @var ErrorBag */
-    public $errors;
+    protected $errors;
 
     /** @var Required */
-    public $requiredRule;
+    protected $requiredRule;
 
     /**
      * Constructor
      *
      * @param \Rakit\Validation\Validator $validator
      * @param array $inputs
-     * @param array $rules
+     * @param TypeVarRulesInstruction $rulesInstruction
      * @param array $messages
-     * @return void
      */
     public function __construct(
         Validator $validator,
         array $inputs,
-        array $rules,
+        array $rulesInstruction,
         array $messages = []
     ) {
         $this->validator    = $validator;
@@ -58,8 +63,9 @@ class Validation
         $this->messages     = $messages;
         $this->errors       = new ErrorBag;
         $this->requiredRule = new Required;
-        foreach ($rules as $attributeKey => $rules) {
-            $this->addAttribute($attributeKey, $rules);
+        foreach ($rulesInstruction as $attributeKey => $ruleInstruction) {
+            /** @var TypeVarRuleInstraction $ruleInstruction */
+            $this->addAttribute($attributeKey, $ruleInstruction);
         }
     }
 
@@ -67,19 +73,19 @@ class Validation
      * Add attribute rules
      *
      * @param string $attributeKey
-     * @param string|array $rules
+     * @param TypeVarRuleInstraction $ruleInstruction
      * @return void
      */
-    public function addAttribute(string $attributeKey, $rules)
+    public function addAttribute(string $attributeKey, $ruleInstruction)
     {
-        $resolvedRules = $this->resolveRules($rules);
-        $attribute     = new Attribute(
+        $resolvedRuleInstruction = $this->resolveRulesInstruction($ruleInstruction);
+
+        $this->attributes[$attributeKey] = new Attribute(
             $this,
             $attributeKey,
             $this->getAlias($attributeKey),
-            $resolvedRules
+            $resolvedRuleInstruction
         );
-        $this->attributes[$attributeKey] = $attribute;
     }
 
     /**
@@ -95,8 +101,6 @@ class Validation
 
     /**
      * Run validation
-     *
-     * @param array $inputs
      */
     public function validate(array $inputs = []): self
     {
@@ -141,41 +145,46 @@ class Validation
     {
         if ($this->isArrayAttribute($attribute)) {
             $attributes = $this->parseArrayAttribute($attribute);
-            foreach ($attributes as $i => $attr) {
+            foreach ($attributes as $attr) {
                 $this->validateAttribute($attr);
             }
             return;
         }
 
-        $attributeKey = $attribute->getKey();
-        $rules        = $attribute->getRules();
-
-        $value        = $this->getValue($attributeKey);
-        $isEmptyValue = $this->isEmptyValue($value);
-
+        $key          = $attribute->getKey();
+        $value        = Helper::arrayGet($this->inputs, $key);
+        $hasValue     = Helper::arrayHas($this->inputs, $key);
+        $isEmptyValue = false === $this->requiredRule->check($value);
+        // dde([
+        //     '$isEmptyValue' => $isEmptyValue,
+        //     '$key' => $key,
+        //     '$value' => $value,
+        //     '$hasValue' => $hasValue,
+        // ]);
+        unset($key);
         if ($attribute->hasRule('nullable') && $isEmptyValue) {
             $rules = [];
+        } else {
+            $rules = $attribute->getRules();
         }
+        unset($isEmptyValue);
 
         $isValid = true;
-        foreach ($rules as $ruleValidator) {
-            $ruleValidator->setAttribute($attribute);
+        foreach ($rules as $rule) {
+            $rule->setAttribute($attribute);
 
-            if ($ruleValidator instanceof ModifyValue) {
-                $value = $ruleValidator->modifyValue($value);
-                $isEmptyValue = $this->isEmptyValue($value);
+            if ($rule instanceof ModifyValue) {
+                $value = $rule->modifyValue($value);
+                $isEmptyValue = false === $this->requiredRule->check($value);
+                if ($isEmptyValue && $this->ruleIsOptional($attribute, $rule)) {
+                    continue;
+                }
             }
 
-            $valid = $ruleValidator->check($value);
-
-            if ($isEmptyValue and $this->ruleIsOptional($attribute, $ruleValidator)) {
-                continue;
-            }
-
-            if (!$valid) {
+            if (!$rule->check($value)) {
                 $isValid = false;
-                $this->addError($attribute, $value, $ruleValidator);
-                if ($ruleValidator->isImplicit()) {
+                $this->addError($attribute, $value, $rule);
+                if ($rule->isImplicit()) {
                     break;
                 }
             }
@@ -347,17 +356,6 @@ class Validation
     }
 
     /**
-     * Check $value is empty value
-     *
-     * @param mixed $value
-     * @return boolean
-     */
-    protected function isEmptyValue($value): bool
-    {
-        return false === $this->requiredRule->check($value);
-    }
-
-    /**
      * Check the rule is optional
      *
      * @param \Rakit\Validation\Attribute $attribute
@@ -481,63 +479,63 @@ class Validation
     }
 
     /**
-     * Resolve $rules
+     * Resolve $rulesInstruction
      *
-     * @param mixed $rules
-     * @return array
+     * @param TypeVarRuleInstraction $rulesInstruction
+     * @return Rule[]
      */
-    protected function resolveRules($rules): array
+    protected function resolveRulesInstruction($rulesInstruction): array
     {
-        if (\is_string($rules)) {
-            $rules = \explode('|', $rules);
+        if (\is_string($rulesInstruction)) {
+            $rulesInstruction = \explode('|', $rulesInstruction);
         }
 
-        $resolvedRules = [];
-        $validatorFactory = $this->getValidator();
+        $resolvedRulesInstruction = [];
 
-        foreach ($rules as $i => $rule) {
-            if (empty($rule)) {
+        foreach ($rulesInstruction as $ruleInstruction) {
+            if (empty($ruleInstruction)) {
                 continue;
             }
             $params = [];
 
-            if (\is_string($rule)) {
-                list($ruleName, $params) = $this->parseRule($rule);
-                $validator = \call_user_func_array($validatorFactory, \array_merge([$ruleName], $params));
-            } elseif ($rule instanceof Rule) {
-                $validator = $rule;
-            } elseif ($rule instanceof Closure) {
-                $validator = \call_user_func_array($validatorFactory, ['callback', $rule]);
+            if (\is_string($ruleInstruction)) {
+                list($ruleName, $params) = $this->parseRuleInstruction($ruleInstruction);
+                $rule = $this->validator->__invoke($ruleName, ...$params);
+            } elseif ($ruleInstruction instanceof Rule) {
+                $rule = $ruleInstruction;
+            } elseif ($ruleInstruction instanceof Closure) {
+                $rule = $this->validator->__invoke('callback', $ruleInstruction);
             } else {
-                $ruleName = \is_object($rule) ? \get_class($rule) : \gettype($rule);
-                $message  = "Rule must be a string, Closure or '" . Rule::class . "' instance. " . $ruleName . " given";
-                throw new \Exception();
+                throw new \Exception(\sprintf(
+                    'Rule must be a string, Closure or "%s" instance. %s given',
+                    Rule::class,
+                    \is_object($ruleInstruction) ? \get_class($ruleInstruction) : \gettype($ruleInstruction)
+                ));
             }
 
-            $resolvedRules[] = $validator;
+            $resolvedRulesInstruction[] = $rule;
         }
 
-        return $resolvedRules;
+        return $resolvedRulesInstruction;
     }
 
     /**
-     * Parse $rule
+     * Parse $ruleInstruction
      *
-     * @param string $rule
-     * @return array
+     * @return array{0:string,1:string[]}
      */
-    protected function parseRule(string $rule): array
+    protected function parseRuleInstruction(string $ruleInstruction): array
     {
-        $exp      = \explode(':', $rule, 2);
-        $rulename = $exp[0];
-        if ($rulename !== 'regex') {
+        $exp  = \explode(':', $ruleInstruction, 2);
+        $name = $exp[0];
+        if ($name !== 'regex') {
             $params = isset($exp[1]) ? \explode(',', $exp[1]) : [];
         } else {
             // TODO is maby null
             $params = [$exp[1]];
         }
 
-        return [$rulename, $params];
+        return [$name, $params];
     }
 
     /**
@@ -576,8 +574,6 @@ class Validation
 
     /**
      * Check validations are passed
-     *
-     * @return bool
      */
     public function passes(): bool
     {
@@ -719,8 +715,6 @@ class Validation
 
     /**
      * Get invalid data
-     *
-     * @return void
      */
     public function getInvalidData(): array
     {

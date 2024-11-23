@@ -27,7 +27,7 @@ class Min extends Rule
         $min = $this->getBytesSize($this->parameter('min'));
         $valueSize = $this->getValueSize($value);
 
-        if (!is_numeric($valueSize)) {
+        if (!\is_numeric($valueSize)) {
             return false;
         }
 

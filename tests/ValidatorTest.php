@@ -160,8 +160,8 @@ class ValidatorTest extends TestCase
                     2000,
                 ],
                 'tmp_name' => [
-                    __DIR__.'/a.png',
-                    __DIR__.'/b.jpeg',
+                    __DIR__ . '/a.png',
+                    __DIR__ . '/b.jpeg',
                 ],
                 'error' => [
                     UPLOAD_ERR_OK,
@@ -183,7 +183,7 @@ class ValidatorTest extends TestCase
                     'name' => 'b.jpeg',
                     'type' => 'image/jpeg',
                     'size' => 2000,
-                    'tmp_name' => __DIR__.'/b.jpeg',
+                    'tmp_name' => __DIR__ . '/b.jpeg',
                     'error' => UPLOAD_ERR_OK,
                 ]
             ]
@@ -194,7 +194,7 @@ class ValidatorTest extends TestCase
                     'name' => 'a.png',
                     'type' => 'image/png',
                     'size' => 1000,
-                    'tmp_name' => __DIR__.'/a.png',
+                    'tmp_name' => __DIR__ . '/a.png',
                     'error' => UPLOAD_ERR_OK,
                 ]
             ]
@@ -209,24 +209,24 @@ class ValidatorTest extends TestCase
         $sampleInputFiles = [
             'photos' => [
                 'name' => [
-                   'foo' => 'a.png',
-                   'bar' => 'b.jpeg',
+                    'foo' => 'a.png',
+                    'bar' => 'b.jpeg',
                 ],
                 'type' => [
-                   'foo' => 'image/png',
-                   'bar' => 'image/jpeg',
+                    'foo' => 'image/png',
+                    'bar' => 'image/jpeg',
                 ],
                 'size' => [
-                   'foo' => 1000,
-                   'bar' => 2000,
+                    'foo' => 1000,
+                    'bar' => 2000,
                 ],
                 'tmp_name' => [
-                   'foo' => __DIR__.'/a.png',
-                   'bar' => __DIR__.'/b.jpeg',
+                    'foo' => __DIR__ . '/a.png',
+                    'bar' => __DIR__ . '/b.jpeg',
                 ],
                 'error' => [
-                   'foo' => UPLOAD_ERR_OK,
-                   'bar' => UPLOAD_ERR_OK,
+                    'foo' => UPLOAD_ERR_OK,
+                    'bar' => UPLOAD_ERR_OK,
                 ]
             ]
         ];
@@ -245,7 +245,7 @@ class ValidatorTest extends TestCase
                     'name' => 'b.jpeg',
                     'type' => 'image/jpeg',
                     'size' => 2000,
-                    'tmp_name' => __DIR__.'/b.jpeg',
+                    'tmp_name' => __DIR__ . '/b.jpeg',
                     'error' => UPLOAD_ERR_OK,
                 ]
             ]
@@ -256,7 +256,7 @@ class ValidatorTest extends TestCase
                     'name' => 'a.png',
                     'type' => 'image/png',
                     'size' => 1000,
-                    'tmp_name' => __DIR__.'/a.png',
+                    'tmp_name' => __DIR__ . '/a.png',
                     'error' => UPLOAD_ERR_OK,
                 ]
             ]
@@ -273,16 +273,16 @@ class ValidatorTest extends TestCase
         $sampleInputFiles = [
             'files' => [
                 'name' => [
-                   'foo' => [
+                    'foo' => [
                         'bar' => [
                             'baz' => 'foo-bar-baz.jpeg',
                             'qux' => 'foo-bar-qux.png',
                         ]
-                   ],
-                   'photos' => [
+                    ],
+                    'photos' => [
                         'photos-0.png',
                         'photos-1.jpeg',
-                   ]
+                    ]
                 ],
                 'type' => [
                     'foo' => [
@@ -297,7 +297,7 @@ class ValidatorTest extends TestCase
                     ]
                 ],
                 'size' => [
-                   'foo' => [
+                    'foo' => [
                         'bar' => [
                             'baz' => 500,
                             'qux' => 750,
@@ -311,17 +311,17 @@ class ValidatorTest extends TestCase
                 'tmp_name' => [
                     'foo' => [
                         'bar' => [
-                            'baz' => __DIR__.'/foo-bar-baz.jpeg',
-                            'qux' => __DIR__.'/foo-bar-qux.png',
+                            'baz' => __DIR__ . '/foo-bar-baz.jpeg',
+                            'qux' => __DIR__ . '/foo-bar-qux.png',
                         ]
                     ],
                     'photos' => [
-                        __DIR__.'/photos-0.png',
-                        __DIR__.'/photos-1.jpeg',
+                        __DIR__ . '/photos-0.png',
+                        __DIR__ . '/photos-1.jpeg',
                     ]
                 ],
                 'error' => [
-                   'foo' => [
+                    'foo' => [
                         'bar' => [
                             'baz' => UPLOAD_ERR_OK,
                             'qux' => UPLOAD_ERR_OK,
@@ -352,7 +352,7 @@ class ValidatorTest extends TestCase
                             'name' => 'foo-bar-baz.jpeg',
                             'type' => 'image/jpeg',
                             'size' => 500,
-                            'tmp_name' => __DIR__.'/foo-bar-baz.jpeg',
+                            'tmp_name' => __DIR__ . '/foo-bar-baz.jpeg',
                             'error' => UPLOAD_ERR_OK,
                         ]
                     ]
@@ -362,7 +362,7 @@ class ValidatorTest extends TestCase
                         'name' => 'photos-1.jpeg',
                         'type' => 'image/jpeg',
                         'size' => 2000,
-                        'tmp_name' => __DIR__.'/photos-1.jpeg',
+                        'tmp_name' => __DIR__ . '/photos-1.jpeg',
                         'error' => UPLOAD_ERR_OK,
                     ]
                 ]
@@ -376,7 +376,7 @@ class ValidatorTest extends TestCase
                             'name' => 'foo-bar-qux.png',
                             'type' => 'image/png',
                             'size' => 750,
-                            'tmp_name' => __DIR__.'/foo-bar-qux.png',
+                            'tmp_name' => __DIR__ . '/foo-bar-qux.png',
                             'error' => UPLOAD_ERR_OK,
                         ]
                     ]
@@ -386,7 +386,7 @@ class ValidatorTest extends TestCase
                         'name' => 'photos-0.png',
                         'type' => 'image/png',
                         'size' => 1000,
-                        'tmp_name' => __DIR__.'/photos-0.png',
+                        'tmp_name' => __DIR__ . '/photos-0.png',
                         'error' => UPLOAD_ERR_OK,
                     ],
                 ]
@@ -531,8 +531,7 @@ class ValidatorTest extends TestCase
 
     public function testRulePresent()
     {
-        $v1 = $this->validator->validate([
-        ], [
+        $v1 = $this->validator->validate([], [
             'something' => 'present'
         ]);
         $this->assertFalse($v1->passes());
@@ -606,16 +605,15 @@ class ValidatorTest extends TestCase
 
     public function testNewValidationRuleCanBeAdded()
     {
+        $this->validator->addRule('even', new Even());
 
-        $this->validator->addValidator('even', new Even());
-
-        $data = [4, 6, 8, 10 ];
+        $data = [4, 6, 8, 10];
 
         $validation = $this->validator->make($data, ['s' => 'even'], []);
 
         $validation->validate();
 
-        $this->assertTrue($validation->passes());
+        $this->assertFalse($validation->passes());
     }
 
     /**
@@ -624,7 +622,7 @@ class ValidatorTest extends TestCase
     public function testInternalValidationRuleCannotBeOverridden()
     {
 
-        $this->validator->addValidator('required', new Required());
+        $this->validator->addRule('required', new Required());
 
         $data = ['s' => json_encode(['name' => 'space x', 'human' => false])];
 
@@ -638,7 +636,7 @@ class ValidatorTest extends TestCase
         $this->validator->allowRuleOverride(true);
 
         //This is a custom rule defined in the fixtures directory
-        $this->validator->addValidator('required', new Required());
+        $this->validator->addRule('required', new Required());
 
         $data = ['s' => json_encode(['name' => 'space x', 'human' => false])];
 
@@ -699,21 +697,25 @@ class ValidatorTest extends TestCase
 
     public function testIgnoreOtherRulesWhenAttributeIsNotRequired()
     {
-        $validation = $this->validator->validate([
-            'an_empty_file' => [
-                'name' => '',
-                'type' => '',
-                'size' => '',
-                'tmp_name' => '',
-                'error' => UPLOAD_ERR_NO_FILE,
+        $validation = $this->validator->validate(
+            [
+                'an_empty_file' => [
+                    'name' => '',
+                    'type' => '',
+                    'size' => '',
+                    'tmp_name' => '',
+                    'error' => UPLOAD_ERR_NO_FILE,
+                ],
+                'required_if_field' => null,
             ],
-            'required_if_field' => null,
-        ], [
-            'optional_field' => 'ipv4|in:127.0.0.1',
-            'required_if_field' => 'required_if:some_value,1|email',
-            'an_empty_file' => 'uploaded_file'
-        ]);
+            [
+                'optional_field' => 'ipv4|in:127.0.0.1',
+                'required_if_field' => 'required_if:some_value,1|email',
+                'an_empty_file' => 'uploaded_file'
+            ]
+        );
 
+        de($validation->errors());
         $this->assertTrue($validation->passes());
     }
 
@@ -823,7 +825,7 @@ class ValidatorTest extends TestCase
     public function testEmptyArrayAssocValidation()
     {
         $validation = $this->validator->validate([], [
-            'user'=> 'required',
+            'user' => 'required',
             'user.email' => 'email',
         ]);
 

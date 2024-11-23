@@ -18,7 +18,7 @@ class ValidationTest extends TestCase
     public function testParseRule($rules, $expectedResult)
     {
         $class = new ReflectionClass(Validation::class);
-        $method = $class->getMethod('parseRule');
+        $method = $class->getMethod('parseRuleInstruction');
         $method->setAccessible(true);
 
         $validation = new Validation(new Validator(), [], []);

@@ -18,6 +18,6 @@ class Uppercase extends Rule
      */
     public function check($value): bool
     {
-        return mb_strtoupper($value, mb_detect_encoding($value)) === $value;
+        return \mb_strtoupper($value, \mb_detect_encoding($value)) === $value;
     }
 }

@@ -107,8 +107,8 @@ class UploadedFile extends Rule implements BeforeValidate
             return;
         }
 
-        $keys = explode(".", $attribute->getKey());
-        $firstKey = array_shift($keys);
+        $keys = \explode(".", $attribute->getKey());
+        $firstKey = \array_shift($keys);
         $firstKeyValue = $this->validation->getValue($firstKey);
 
         $resolvedValue = $this->resolveUploadedFileValue($firstKeyValue);
@@ -139,7 +139,7 @@ class UploadedFile extends Rule implements BeforeValidate
         }
 
         // below is Required rule job
-        if (!$this->isValueFromUploadedFiles($value) or $value['error'] == UPLOAD_ERR_NO_FILE) {
+        if (!$this->isValueFromUploadedFiles($value) or $value['error'] == \UPLOAD_ERR_NO_FILE) {
             return true;
         }
 
@@ -173,7 +173,7 @@ class UploadedFile extends Rule implements BeforeValidate
             $ext = $guesser->getExtension($value['type']);
             unset($guesser);
 
-            if (!in_array($ext, $allowedTypes)) {
+            if (!\in_array($ext, $allowedTypes)) {
                 $this->setMessage('The :attribute file type must be :allowed_types');
                 return false;
             }

@@ -10,9 +10,7 @@ class ErrorBag
 
     /**
      * Constructor
-     *
      * @param array $messages
-     * @return void
      */
     public function __construct(array $messages = [])
     {
@@ -22,18 +20,15 @@ class ErrorBag
     /**
      * Add message for given key and rule
      *
-     * @param string $key
-     * @param string $rule
-     * @param string $message
      * @return void
      */
-    public function add(string $key, string $rule, string $message)
+    public function add(string $key, string $ruleName, string $message)
     {
         if (!isset($this->messages[$key])) {
             $this->messages[$key] = [];
         }
 
-        $this->messages[$key][$rule] = $message;
+        $this->messages[$key][$ruleName] = $message;
     }
 
     /**
@@ -138,7 +133,7 @@ class ErrorBag
     {
         $messages = $this->messages;
         $results = [];
-        foreach ($messages as $key => $keyMessages) {
+        foreach ($messages as $keyMessages) {
             foreach ($keyMessages as $message) {
                 $results[] = $this->formatMessage($message, $format);
             }

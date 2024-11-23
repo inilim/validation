@@ -20,7 +20,7 @@ class RequiredIf extends Required
      */
     public function fillParameters(array $params): Rule
     {
-        $this->params['field'] = array_shift($params);
+        $this->params['field'] = \array_shift($params);
         $this->params['values'] = $params;
         return $this;
     }
@@ -42,7 +42,7 @@ class RequiredIf extends Required
         $validator = $this->validation->getValidator();
         $requiredValidator = $validator('required');
 
-        if (in_array($anotherValue, $definedValues)) {
+        if (\in_array($anotherValue, $definedValues)) {
             $this->setAttributeAsRequired();
             return $requiredValidator->check($value, []);
         }

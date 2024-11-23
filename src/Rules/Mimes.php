@@ -42,8 +42,8 @@ class Mimes extends Rule
      */
     public function allowTypes($types): Rule
     {
-        if (is_string($types)) {
-            $types = explode('|', $types);
+        if (\is_string($types)) {
+            $types = \explode('|', $types);
         }
 
         $this->params['allowed_types'] = $types;
@@ -85,7 +85,7 @@ class Mimes extends Rule
             $ext = $guesser->getExtension($value['type']);
             unset($guesser);
 
-            if (!in_array($ext, $allowedTypes)) {
+            if (!\in_array($ext, $allowedTypes)) {
                 return false;
             }
         }

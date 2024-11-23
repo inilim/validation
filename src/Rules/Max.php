@@ -27,7 +27,7 @@ class Max extends Rule
         $max = $this->getBytesSize($this->parameter('max'));
         $valueSize = $this->getValueSize($value);
 
-        if (!is_numeric($valueSize)) {
+        if (!\is_numeric($valueSize)) {
             return false;
         }
 

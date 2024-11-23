@@ -2,9 +2,12 @@
 
 namespace Rakit\Validation;
 
+use Rakit\Validation\Rule;
+use Rakit\Validation\Validation;
+
 class Attribute
 {
-    /** @var array */
+    /** @var array<string,Rule> */
     protected $rules = [];
 
     /** @var string */
@@ -13,13 +16,13 @@ class Attribute
     /** @var string|null */
     protected $alias;
 
-    /** @var \Rakit\Validation\Validation */
+    /** @var Validation */
     protected $validation;
 
     /** @var bool */
     protected $required = false;
 
-    /** @var \Rakit\Validation\Validation|null */
+    /** @var Validation|null */
     protected $primaryAttribute = null;
 
     /** @var array */
@@ -29,17 +32,11 @@ class Attribute
     protected $keyIndexes = [];
 
     /**
-     * Constructor
-     *
-     * @param \Rakit\Validation\Validation  $validation
-     * @param string      $key
-     * @param string|null $alias
-     * @param array       $rules
-     * @return void
+     * @param Rule[] $rules
      */
     public function __construct(
         Validation $validation,
-        string $key,
+        ?string $key,
         $alias = null,
         array $rules = []
     ) {
@@ -53,43 +50,33 @@ class Attribute
 
     /**
      * Set the primary attribute
-     *
-     * @param \Rakit\Validation\Attribute $primaryAttribute
-     * @return void
      */
-    public function setPrimaryAttribute(Attribute $primaryAttribute)
+    public function setPrimaryAttribute(Attribute $primaryAttribute): void
     {
         $this->primaryAttribute = $primaryAttribute;
     }
 
     /**
      * Set key indexes
-     *
-     * @param array $keyIndexes
-     * @return void
      */
-    public function setKeyIndexes(array $keyIndexes)
+    public function setKeyIndexes(array $keyIndexes): void
     {
         $this->keyIndexes = $keyIndexes;
     }
 
     /**
      * Get primary attributes
-     *
-     * @return \Rakit\Validation\Attribute|null
      */
-    public function getPrimaryAttribute()
+    public function getPrimaryAttribute(): ?Attribute
     {
         return $this->primaryAttribute;
     }
 
     /**
      * Set other attributes
-     *
      * @param array $otherAttributes
-     * @return void
      */
-    public function setOtherAttributes(array $otherAttributes)
+    public function setOtherAttributes(array $otherAttributes): void
     {
         $this->otherAttributes = [];
         foreach ($otherAttributes as $otherAttribute) {
@@ -99,18 +86,14 @@ class Attribute
 
     /**
      * Add other attributes
-     *
-     * @param \Rakit\Validation\Attribute $otherAttribute
-     * @return void
      */
-    public function addOtherAttribute(Attribute $otherAttribute)
+    public function addOtherAttribute(Attribute $otherAttribute): void
     {
         $this->otherAttributes[] = $otherAttribute;
     }
 
     /**
      * Get other attributes
-     *
      * @return array
      */
     public function getOtherAttributes(): array
@@ -120,11 +103,8 @@ class Attribute
 
     /**
      * Add rule
-     *
-     * @param \Rakit\Validation\Rule $rule
-     * @return void
      */
-    public function addRule(Rule $rule)
+    public function addRule(Rule $rule): void
     {
         $rule->setAttribute($this);
         $rule->setValidation($this->validation);
@@ -133,19 +113,15 @@ class Attribute
 
     /**
      * Get rule
-     *
-     * @param string $ruleKey
-     * @return void
      */
-    public function getRule(string $ruleKey)
+    public function getRule(string $ruleKey): ?Rule
     {
-        return $this->hasRule($ruleKey) ? $this->rules[$ruleKey] : null;
+        return $this->rules[$ruleKey] ?? null;
     }
 
     /**
      * Get rules
-     *
-     * @return array
+     * @return array<string,Rule>
      */
     public function getRules(): array
     {
@@ -154,9 +130,6 @@ class Attribute
 
     /**
      * Check the $ruleKey has in the rule
-     *
-     * @param string $ruleKey
-     * @return bool
      */
     public function hasRule(string $ruleKey): bool
     {
@@ -165,19 +138,14 @@ class Attribute
 
     /**
      * Set required
-     *
-     * @param boolean $required
-     * @return void
      */
-    public function setRequired(bool $required)
+    public function setRequired(bool $required): void
     {
         $this->required = $required;
     }
 
     /**
      * Set rule is required
-     *
-     * @return boolean
      */
     public function isRequired(): bool
     {
@@ -186,8 +154,6 @@ class Attribute
 
     /**
      * Get key
-     *
-     * @return string
      */
     public function getKey(): string
     {
@@ -196,7 +162,6 @@ class Attribute
 
     /**
      * Get key indexes
-     *
      * @return array
      */
     public function getKeyIndexes(): array
@@ -206,11 +171,9 @@ class Attribute
 
     /**
      * Get value
-     *
-     * @param string|null $key
      * @return mixed
      */
-    public function getValue(string $key = null)
+    public function getValue(?string $key = null)
     {
         if ($key && $this->isArrayAttribute()) {
             $key = $this->resolveSiblingKey($key);
@@ -225,8 +188,6 @@ class Attribute
 
     /**
      * Get that is array attribute
-     *
-     * @return boolean
      */
     public function isArrayAttribute(): bool
     {
@@ -235,8 +196,6 @@ class Attribute
 
     /**
      * Check this attribute is using dot notation
-     *
-     * @return boolean
      */
     public function isUsingDotNotation(): bool
     {
@@ -245,9 +204,6 @@ class Attribute
 
     /**
      * Resolve sibling key
-     *
-     * @param string $key
-     * @return string
      */
     public function resolveSiblingKey(string $key): string
     {
@@ -264,10 +220,8 @@ class Attribute
 
     /**
      * Get humanize key
-     *
-     * @return string
      */
-    public function getHumanizedKey()
+    public function getHumanizedKey(): string
     {
         $primaryAttribute = $this->getPrimaryAttribute();
         $key              = \str_replace('_', ' ', $this->key);
@@ -288,21 +242,16 @@ class Attribute
 
     /**
      * Set alias
-     *
-     * @param string $alias
-     * @return void
      */
-    public function setAlias(string $alias)
+    public function setAlias(string $alias): void
     {
         $this->alias = $alias;
     }
 
     /**
      * Get alias
-     *
-     * @return string|null
      */
-    public function getAlias()
+    public function getAlias(): ?string
     {
         return $this->alias;
     }
