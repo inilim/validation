@@ -5,7 +5,7 @@ namespace Rakit\Validation;
 use Rakit\Validation\Rule;
 use Rakit\Validation\Validation;
 
-class Attribute
+final class Attribute
 {
     /** @var array<string,Rule> */
     protected $rules = [];
@@ -22,7 +22,7 @@ class Attribute
     /** @var bool */
     protected $required = false;
 
-    /** @var Validation|null */
+    /** @var Attribute|null */
     protected $primaryAttribute = null;
 
     /** @var array */

@@ -24,7 +24,7 @@ class Defaults extends Rule implements ModifyValue
     {
         $this->requireParameters($this->fillableParams);
 
-        $default = $this->parameter('default');
+        // $default = $this->parameter('default');
         return true;
     }
 
@@ -44,7 +44,6 @@ class Defaults extends Rule implements ModifyValue
      */
     protected function isEmptyValue($value): bool
     {
-        $requiredValidator = new Required;
-        return false === $requiredValidator->check($value, []);
+        return false === (new Required)->check($value);
     }
 }

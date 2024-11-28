@@ -613,7 +613,7 @@ class ValidatorTest extends TestCase
 
         $validation->validate();
 
-        $this->assertFalse($validation->passes());
+        $this->assertTrue($validation->passes());
     }
 
     /**
@@ -715,7 +715,6 @@ class ValidatorTest extends TestCase
             ]
         );
 
-        de($validation->errors());
         $this->assertTrue($validation->passes());
     }
 

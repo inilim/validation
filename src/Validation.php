@@ -4,6 +4,8 @@ namespace Rakit\Validation;
 
 use Closure;
 use Rakit\Validation\Rule;
+use Rakit\Validation\ErrorBag;
+use Rakit\Validation\Attribute;
 use Rakit\Validation\Validator;
 use Rakit\Validation\Rules\Required;
 use Rakit\Validation\Rules\Interfaces\ModifyValue;
@@ -44,9 +46,13 @@ class Validation
     /** @var Required */
     protected $requiredRule;
 
+    /** @var bool */
+    protected $hasBeforeValidateRule = false;
+    /** @var bool */
+    protected $hasModifyValueRule    = false;
+
     /**
      * Constructor
-     *
      * @param \Rakit\Validation\Validator $validator
      * @param array $inputs
      * @param TypeVarRulesInstruction $rulesInstruction
@@ -110,10 +116,12 @@ class Validation
         }
 
         // Before validation hooks
-        foreach ($this->attributes as $attribute) {
-            foreach ($attribute->getRules() as $rule) {
-                if ($rule instanceof BeforeValidate) {
-                    $rule->beforeValidate();
+        if ($this->hasBeforeValidateRule) {
+            foreach ($this->attributes as $attribute) {
+                foreach ($attribute->getRules() as $rule) {
+                    if ($rule instanceof BeforeValidate) {
+                        $rule->beforeValidate();
+                    }
                 }
             }
         }
@@ -127,8 +135,6 @@ class Validation
 
     /**
      * Get ErrorBag instance
-     *
-     * @return \Rakit\Validation\ErrorBag
      */
     public function errors(): ErrorBag
     {
@@ -137,11 +143,8 @@ class Validation
 
     /**
      * Validate attribute
-     *
-     * @param \Rakit\Validation\Attribute $attribute
-     * @return void
      */
-    protected function validateAttribute(Attribute $attribute)
+    protected function validateAttribute(Attribute $attribute): void
     {
         if ($this->isArrayAttribute($attribute)) {
             $attributes = $this->parseArrayAttribute($attribute);
@@ -152,14 +155,14 @@ class Validation
         }
 
         $key          = $attribute->getKey();
-        $value        = Helper::arrayGet($this->inputs, $key);
-        $hasValue     = Helper::arrayHas($this->inputs, $key);
+        $hasKey       = Helper::arrayHas($this->inputs, $key);
+        $value        = $hasKey ? Helper::arrayGet($this->inputs, $key) : null;
         $isEmptyValue = false === $this->requiredRule->check($value);
         // dde([
         //     '$isEmptyValue' => $isEmptyValue,
         //     '$key' => $key,
         //     '$value' => $value,
-        //     '$hasValue' => $hasValue,
+        //     '$hasKey' => $hasKey,
         // ]);
         unset($key);
         if ($attribute->hasRule('nullable') && $isEmptyValue) {
@@ -167,18 +170,18 @@ class Validation
         } else {
             $rules = $attribute->getRules();
         }
-        unset($isEmptyValue);
 
         $isValid = true;
         foreach ($rules as $rule) {
             $rule->setAttribute($attribute);
 
-            if ($rule instanceof ModifyValue) {
+            if ($this->hasModifyValueRule && $rule instanceof ModifyValue) {
                 $value = $rule->modifyValue($value);
                 $isEmptyValue = false === $this->requiredRule->check($value);
-                if ($isEmptyValue && $this->ruleIsOptional($attribute, $rule)) {
-                    continue;
-                }
+            }
+
+            if ($isEmptyValue && $this->ruleIsOptional($attribute, $rule)) {
+                continue;
             }
 
             if (!$rule->check($value)) {
@@ -190,6 +193,8 @@ class Validation
             }
         }
 
+        // if ($hasKey) return;
+
         if ($isValid) {
             $this->setValidData($attribute, $value);
         } else {
@@ -199,9 +204,6 @@ class Validation
 
     /**
      * Check whether given $attribute is array attribute
-     *
-     * @param \Rakit\Validation\Attribute $attribute
-     * @return bool
      */
     protected function isArrayAttribute(Attribute $attribute): bool
     {
@@ -210,8 +212,6 @@ class Validation
 
     /**
      * Parse array attribute into it's child attributes
-     *
-     * @param \Rakit\Validation\Attribute $attribute
      * @return array
      */
     protected function parseArrayAttribute(Attribute $attribute): array
@@ -340,27 +340,19 @@ class Validation
 
     /**
      * Add error to the $this->errors
-     *
-     * @param \Rakit\Validation\Attribute $attribute
      * @param mixed $value
-     * @param \Rakit\Validation\Rule $ruleValidator
-     * @return void
      */
-    protected function addError(Attribute $attribute, $value, Rule $ruleValidator)
+    protected function addError(Attribute $attribute, $value, Rule $rule): void
     {
         $this->errors->add(
             $attribute->getKey(),
-            $ruleValidator->getKey(), // rule name
-            $this->resolveMessage($attribute, $value, $ruleValidator) // message
+            $rule->getKey(), // rule name
+            $this->resolveMessage($attribute, $value, $rule) // message
         );
     }
 
     /**
      * Check the rule is optional
-     *
-     * @param \Rakit\Validation\Attribute $attribute
-     * @param \Rakit\Validation\Rule $rule
-     * @return bool
      */
     protected function ruleIsOptional(Attribute $attribute, Rule $rule): bool
     {
@@ -371,9 +363,6 @@ class Validation
 
     /**
      * Resolve attribute name
-     *
-     * @param \Rakit\Validation\Attribute $attribute
-     * @return string
      */
     protected function resolveAttributeName(Attribute $attribute): string
     {
@@ -392,20 +381,17 @@ class Validation
 
     /**
      * Resolve message
-     *
-     * @param \Rakit\Validation\Attribute $attribute
      * @param mixed $value
-     * @param \Rakit\Validation\Rule $validator
      * @return mixed
      */
-    protected function resolveMessage(Attribute $attribute, $value, Rule $validator): string
+    protected function resolveMessage(Attribute $attribute, $value, Rule $rule)
     {
         $primaryAttribute = $attribute->getPrimaryAttribute();
-        $params           = \array_merge($validator->getParameters(), $validator->getParametersTexts());
+        $params           = \array_merge($rule->getParameters(), $rule->getParametersTexts());
         $attributeKey     = $attribute->getKey();
-        $ruleKey          = $validator->getKey();
+        $ruleKey          = $rule->getKey();
         $alias            = $attribute->getAlias() ?: $this->resolveAttributeName($attribute);
-        $message          = $validator->getMessage(); // default rule message
+        $message          = $rule->getMessage(); // default rule message
         $messageKeys      = [
             $attributeKey . $this->messageSeparator . $ruleKey,
             $attributeKey,
@@ -463,16 +449,14 @@ class Validation
 
     /**
      * Stringify $value
-     *
      * @param mixed $value
-     * @return string
      */
     protected function stringify($value): string
     {
         if (\is_string($value) || \is_numeric($value)) {
-            return $value;
+            return (string)$value;
         } elseif (\is_array($value) || \is_object($value)) {
-            return \json_encode($value);
+            return (string)\json_encode($value);
         } else {
             return '';
         }
@@ -491,7 +475,8 @@ class Validation
         }
 
         $resolvedRulesInstruction = [];
-
+        $hasBeforeValidateRule    = null;
+        $hasModifyValueRule       = null;
         foreach ($rulesInstruction as $ruleInstruction) {
             if (empty($ruleInstruction)) {
                 continue;
@@ -511,6 +496,13 @@ class Validation
                     Rule::class,
                     \is_object($ruleInstruction) ? \get_class($ruleInstruction) : \gettype($ruleInstruction)
                 ));
+            }
+
+            if ($hasBeforeValidateRule === null && $rule instanceof BeforeValidate) {
+                $hasBeforeValidateRule = $this->hasBeforeValidateRule = true;
+            }
+            if ($hasModifyValueRule === null && $rule instanceof ModifyValue) {
+                $hasModifyValueRule = $this->hasModifyValueRule = true;
             }
 
             $resolvedRulesInstruction[] = $rule;
