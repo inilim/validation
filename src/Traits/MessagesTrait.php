@@ -15,7 +15,7 @@ trait MessagesTrait
      * @param mixed $message
      * @return void
      */
-    public function setMessage(string $key, string $message)
+    function setMessage(string $key, string $message)
     {
         $this->messages[$key] = $message;
     }
@@ -26,7 +26,7 @@ trait MessagesTrait
      * @param array $messages
      * @return void
      */
-    public function setMessages(array $messages)
+    function setMessages(array $messages)
     {
         $this->messages = \array_merge($this->messages, $messages);
     }
@@ -37,7 +37,7 @@ trait MessagesTrait
      * @param string $key
      * @return string
      */
-    public function getMessage(string $key): string
+    function getMessage(string $key): string
     {
         return \array_key_exists($key, $this->messages) ? $this->messages[$key] : $key;
     }
@@ -47,7 +47,7 @@ trait MessagesTrait
      *
      * @return array
      */
-    public function getMessages(): array
+    function getMessages(): array
     {
         return $this->messages;
     }

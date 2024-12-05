@@ -58,7 +58,7 @@ class Validation
      * @param TypeVarRulesInstruction $rulesInstruction
      * @param array $messages
      */
-    public function __construct(
+    function __construct(
         Validator $validator,
         array $inputs,
         array $rulesInstruction,
@@ -77,12 +77,9 @@ class Validation
 
     /**
      * Add attribute rules
-     *
-     * @param string $attributeKey
      * @param TypeVarRuleInstraction $ruleInstruction
-     * @return void
      */
-    public function addAttribute(string $attributeKey, $ruleInstruction)
+    function addAttribute(string $attributeKey, $ruleInstruction): void
     {
         $resolvedRuleInstruction = $this->resolveRulesInstruction($ruleInstruction);
 
@@ -96,11 +93,8 @@ class Validation
 
     /**
      * Get attribute by key
-     *
-     * @param string $attributeKey
-     * @return null|\Rakit\Validation\Attribute
      */
-    public function getAttribute(string $attributeKey)
+    function getAttribute(string $attributeKey): ?Attribute
     {
         return $this->attributes[$attributeKey] ?? null;
     }
@@ -108,7 +102,7 @@ class Validation
     /**
      * Run validation
      */
-    public function validate(array $inputs = []): self
+    function validate(array $inputs = []): self
     {
         $this->errors = new ErrorBag; // reset error bag
         if ($inputs) {
@@ -136,9 +130,161 @@ class Validation
     /**
      * Get ErrorBag instance
      */
-    public function errors(): ErrorBag
+    function errors(): ErrorBag
     {
         return $this->errors;
+    }
+
+    /**
+     * Get all of the exact attribute values for a given wildcard attribute.
+     * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L354
+     * @param  array  $data
+     * @return array
+     */
+    function extractValuesForWildcards(array $data, string $attributeKey): array
+    {
+        $keys = [];
+
+        $pattern = \str_replace('\*', '[^\.]+', \preg_quote($attributeKey));
+
+        foreach ($data as $key => $value) {
+            if ((bool) \preg_match('/^' . $pattern . '/', $key, $matches)) {
+                $keys[$matches[0]] = null;
+            }
+        }
+
+        $keys = \array_keys($keys);
+
+        $data = [];
+
+        foreach ($keys as $key) {
+            $data[$key] = Helper::arrayGet($this->inputs, $key);
+        }
+
+        return $data;
+    }
+
+
+
+    /**
+     * Given $attributeKey and $alias then assign alias
+     */
+    function setAlias(string $attributeKey, string $alias): void
+    {
+        $this->aliases[$attributeKey] = $alias;
+    }
+
+    /**
+     * Get attribute alias from given key
+     */
+    function getAlias(string $attributeKey): ?string
+    {
+        return $this->aliases[$attributeKey] ?? null;
+    }
+
+    /**
+     * Set attributes aliases
+     * @param array $aliases
+     */
+    function setAliases(array $aliases): void
+    {
+        $this->aliases = \array_merge($this->aliases, $aliases);
+    }
+
+    /**
+     * Check validations are passed
+     */
+    function passes(): bool
+    {
+        return $this->errors->count() === 0;
+    }
+
+    /**
+     * Check validations are failed
+     */
+    function fails(): bool
+    {
+        return !$this->passes();
+    }
+
+    /**
+     * Given $key and get value
+     * @return mixed
+     */
+    function getValue(string $key)
+    {
+        return Helper::arrayGet($this->inputs, $key);
+    }
+
+    /**
+     * Set input value
+     * @param mixed $value
+     */
+    function setValue(string $key, $value): void
+    {
+        Helper::arraySet($this->inputs, $key, $value);
+    }
+
+    /**
+     * Given $key and check value is exsited
+     */
+    function hasValue(string $key): bool
+    {
+        return Helper::arrayHas($this->inputs, $key);
+    }
+
+    /**
+     * Get Validator class instance
+     */
+    function getValidator(): Validator
+    {
+        return $this->validator;
+    }
+
+    /**
+     * Get validated data
+     * @return array
+     */
+    function getValidatedData(): array
+    {
+        return \array_merge($this->validData, $this->invalidData);
+    }
+
+    /**
+     * Get valid data
+     * @return array
+     */
+    function getValidData(): array
+    {
+        return $this->validData;
+    }
+
+    /**
+     * Get invalid data
+     * @return array
+     */
+    function getInvalidData(): array
+    {
+        return $this->invalidData;
+    }
+
+    /**
+     * Gather a copy of the attribute data filled with any missing attributes.
+     * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L334
+     * @return array
+     */
+    protected function initializeAttributeOnData(string $attributeKey): array
+    {
+        $data = $this->extractDataFromPath(
+            $this->getLeadingExplicitAttributePath($attributeKey)
+        );
+        $asteriskPos = \strpos($attributeKey, '*');
+
+        if (false === $asteriskPos || $asteriskPos === (\mb_strlen($attributeKey, 'UTF-8') - 1)) {
+            return $data;
+        }
+
+        return Helper::arraySet($data, $attributeKey, null, true);
     }
 
     /**
@@ -249,58 +395,6 @@ class Validation
     }
 
     /**
-     * Gather a copy of the attribute data filled with any missing attributes.
-     * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L334
-     *
-     * @param  string  $attribute
-     * @return array
-     */
-    protected function initializeAttributeOnData(string $attributeKey): array
-    {
-        $data = $this->extractDataFromPath(
-            $this->getLeadingExplicitAttributePath($attributeKey)
-        );
-        $asteriskPos = \strpos($attributeKey, '*');
-
-        if (false === $asteriskPos || $asteriskPos === (\mb_strlen($attributeKey, 'UTF-8') - 1)) {
-            return $data;
-        }
-
-        return Helper::arraySet($data, $attributeKey, null, true);
-    }
-
-    /**
-     * Get all of the exact attribute values for a given wildcard attribute.
-     * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L354
-     *
-     * @param  array  $data
-     * @param  string  $attributeKey
-     * @return array
-     */
-    public function extractValuesForWildcards(array $data, string $attributeKey): array
-    {
-        $keys = [];
-
-        $pattern = \str_replace('\*', '[^\.]+', \preg_quote($attributeKey));
-
-        foreach ($data as $key => $value) {
-            if ((bool) \preg_match('/^' . $pattern . '/', $key, $matches)) {
-                $keys[$matches[0]] = null;
-            }
-        }
-
-        $keys = \array_keys($keys);
-
-        $data = [];
-
-        foreach ($keys as $key) {
-            $data[$key] = Helper::arrayGet($this->inputs, $key);
-        }
-
-        return $data;
-    }
-
-    /**
      * Get the explicit part of the attribute name.
      * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L2817
      *
@@ -308,10 +402,9 @@ class Validation
      *
      * Allows us to not spin through all of the flattened data for some operations.
      *
-     * @param  string  $attributeKey
      * @return string|null null when root wildcard
      */
-    protected function getLeadingExplicitAttributePath(string $attributeKey)
+    protected function getLeadingExplicitAttributePath(string $attributeKey): ?string
     {
         return \rtrim(\explode('*', $attributeKey)[0], '.') ?: null;
     }
@@ -321,11 +414,9 @@ class Validation
      * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L2830
      *
      * Used to extract a sub-section of the data for faster iteration.
-     *
-     * @param  string|null $attributeKey
      * @return array
      */
-    protected function extractDataFromPath($attributeKey): array
+    protected function extractDataFromPath(?string $attributeKey): array
     {
         $results = [];
 
@@ -464,7 +555,6 @@ class Validation
 
     /**
      * Resolve $rulesInstruction
-     *
      * @param TypeVarRuleInstraction $rulesInstruction
      * @return Rule[]
      */
@@ -513,7 +603,6 @@ class Validation
 
     /**
      * Parse $ruleInstruction
-     *
      * @return array{0:string,1:string[]}
      */
     protected function parseRuleInstruction(string $ruleInstruction): array
@@ -531,104 +620,7 @@ class Validation
     }
 
     /**
-     * Given $attributeKey and $alias then assign alias
-     *
-     * @param mixed $attributeKey
-     * @param mixed $alias
-     * @return void
-     */
-    public function setAlias(string $attributeKey, string $alias)
-    {
-        $this->aliases[$attributeKey] = $alias;
-    }
-
-    /**
-     * Get attribute alias from given key
-     *
-     * @param mixed $attributeKey
-     * @return string|null
-     */
-    public function getAlias(string $attributeKey)
-    {
-        return $this->aliases[$attributeKey] ?? null;
-    }
-
-    /**
-     * Set attributes aliases
-     *
-     * @param array $aliases
-     * @return void
-     */
-    public function setAliases(array $aliases)
-    {
-        $this->aliases = \array_merge($this->aliases, $aliases);
-    }
-
-    /**
-     * Check validations are passed
-     */
-    public function passes(): bool
-    {
-        return $this->errors->count() === 0;
-    }
-
-    /**
-     * Check validations are failed
-     *
-     * @return bool
-     */
-    public function fails(): bool
-    {
-        return !$this->passes();
-    }
-
-    /**
-     * Given $key and get value
-     *
-     * @param string $key
-     * @return mixed
-     */
-    public function getValue(string $key)
-    {
-        return Helper::arrayGet($this->inputs, $key);
-    }
-
-    /**
-     * Set input value
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public function setValue(string $key, $value)
-    {
-        Helper::arraySet($this->inputs, $key, $value);
-    }
-
-    /**
-     * Given $key and check value is exsited
-     *
-     * @param string $key
-     * @return boolean
-     */
-    public function hasValue(string $key): bool
-    {
-        return Helper::arrayHas($this->inputs, $key);
-    }
-
-    /**
-     * Get Validator class instance
-     *
-     * @return \Rakit\Validation\Validator
-     */
-    public function getValidator(): Validator
-    {
-        return $this->validator;
-    }
-
-    /**
      * Given $inputs and resolve input attributes
-     *
      * @param array $inputs
      * @return array
      */
@@ -650,23 +642,10 @@ class Validation
     }
 
     /**
-     * Get validated data
-     *
-     * @return array
-     */
-    public function getValidatedData(): array
-    {
-        return \array_merge($this->validData, $this->invalidData);
-    }
-
-    /**
      * Set valid data
-     *
-     * @param \Rakit\Validation\Attribute $attribute
      * @param mixed $value
-     * @return void
      */
-    protected function setValidData(Attribute $attribute, $value)
+    protected function setValidData(Attribute $attribute, $value): void
     {
         $key = $attribute->getKey();
         if ($attribute->isArrayAttribute() || $attribute->isUsingDotNotation()) {
@@ -678,23 +657,10 @@ class Validation
     }
 
     /**
-     * Get valid data
-     *
-     * @return array
-     */
-    public function getValidData(): array
-    {
-        return $this->validData;
-    }
-
-    /**
      * Set invalid data
-     *
-     * @param \Rakit\Validation\Attribute $attribute
      * @param mixed $value
-     * @return void
      */
-    protected function setInvalidData(Attribute $attribute, $value)
+    protected function setInvalidData(Attribute $attribute, $value): void
     {
         $key = $attribute->getKey();
         if ($attribute->isArrayAttribute() || $attribute->isUsingDotNotation()) {
@@ -703,13 +669,5 @@ class Validation
         } else {
             $this->invalidData[$key] = $value;
         }
-    }
-
-    /**
-     * Get invalid data
-     */
-    public function getInvalidData(): array
-    {
-        return $this->invalidData;
     }
 }

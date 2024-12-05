@@ -35,35 +35,35 @@ abstract class Rule
     /**
      * @param mixed $value
      */
-    abstract public function check($value): bool;
+    abstract function check($value): bool;
 
     /**
      * Set Validation class instance
      */
-    public function setValidation(Validation $validation): void
+    function setValidation(Validation $validation): void
     {
         $this->validation = $validation;
     }
 
-    public function setKey(string $key): void
+    function setKey(string $key): void
     {
         $this->key = $key;
     }
 
     /**
-     * @return string|class-string
+     * @return string|class-string<Rule>
      */
-    public function getKey(): string
+    function getKey(): string
     {
         return $this->key ?: \get_class($this);
     }
 
-    public function setAttribute(Attribute $attribute): void
+    function setAttribute(Attribute $attribute): void
     {
         $this->attribute = $attribute;
     }
 
-    public function getAttribute(): ?Attribute
+    function getAttribute(): ?Attribute
     {
         return $this->attribute;
     }
@@ -71,7 +71,7 @@ abstract class Rule
     /**
      * @return array
      */
-    public function getParameters(): array
+    function getParameters(): array
     {
         return $this->params;
     }
@@ -79,7 +79,7 @@ abstract class Rule
     /**
      * @param array $params
      */
-    public function setParameters(array $params): self
+    function setParameters(array $params): self
     {
         $this->params = \array_merge($this->params, $params);
         return $this;
@@ -88,7 +88,7 @@ abstract class Rule
     /**
      * @param mixed $value
      */
-    public function setParameter(string $key, $value): self
+    function setParameter(string $key, $value): self
     {
         $this->params[$key] = $value;
         return $this;
@@ -98,7 +98,7 @@ abstract class Rule
      * Fill $params to $this->params
      * @param array $params
      */
-    public function fillParameters(array $params): self
+    function fillParameters(array $params): self
     {
         if (!$params) return $this;
 
@@ -117,7 +117,7 @@ abstract class Rule
      * Get parameter from given $key, return null if it not exists
      * @return mixed
      */
-    public function parameter(string $key)
+    function parameter(string $key)
     {
         return $this->params[$key] ?? null;
     }
@@ -125,7 +125,7 @@ abstract class Rule
     /**
      * Set parameter text that can be displayed in error message using ':param_key'
      */
-    public function setParameterText(string $key, string $text): void
+    function setParameterText(string $key, string $text): void
     {
         $this->paramsTexts[$key] = $text;
     }
@@ -134,7 +134,7 @@ abstract class Rule
      * Get $paramsTexts
      * @return array
      */
-    public function getParametersTexts(): array
+    function getParametersTexts(): array
     {
         return $this->paramsTexts;
     }
@@ -142,7 +142,7 @@ abstract class Rule
     /**
      * Check whether this rule is implicit
      */
-    public function isImplicit(): bool
+    function isImplicit(): bool
     {
         return $this->implicit;
     }
@@ -150,18 +150,18 @@ abstract class Rule
     /**
      * Just alias of setMessage
      */
-    public function message(string $message): self
+    function message(string $message): self
     {
         return $this->setMessage($message);
     }
 
-    public function setMessage(string $message): self
+    function setMessage(string $message): self
     {
         $this->message = $message;
         return $this;
     }
 
-    public function getMessage(): string
+    function getMessage(): string
     {
         return $this->message;
     }

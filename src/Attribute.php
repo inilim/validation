@@ -34,7 +34,7 @@ final class Attribute
     /**
      * @param Rule[] $rules
      */
-    public function __construct(
+    function __construct(
         Validation $validation,
         ?string $key,
         $alias = null,
@@ -51,7 +51,7 @@ final class Attribute
     /**
      * Set the primary attribute
      */
-    public function setPrimaryAttribute(Attribute $primaryAttribute): void
+    function setPrimaryAttribute(Attribute $primaryAttribute): void
     {
         $this->primaryAttribute = $primaryAttribute;
     }
@@ -59,7 +59,7 @@ final class Attribute
     /**
      * Set key indexes
      */
-    public function setKeyIndexes(array $keyIndexes): void
+    function setKeyIndexes(array $keyIndexes): void
     {
         $this->keyIndexes = $keyIndexes;
     }
@@ -67,7 +67,7 @@ final class Attribute
     /**
      * Get primary attributes
      */
-    public function getPrimaryAttribute(): ?Attribute
+    function getPrimaryAttribute(): ?Attribute
     {
         return $this->primaryAttribute;
     }
@@ -76,7 +76,7 @@ final class Attribute
      * Set other attributes
      * @param array $otherAttributes
      */
-    public function setOtherAttributes(array $otherAttributes): void
+    function setOtherAttributes(array $otherAttributes): void
     {
         $this->otherAttributes = [];
         foreach ($otherAttributes as $otherAttribute) {
@@ -87,7 +87,7 @@ final class Attribute
     /**
      * Add other attributes
      */
-    public function addOtherAttribute(Attribute $otherAttribute): void
+    function addOtherAttribute(Attribute $otherAttribute): void
     {
         $this->otherAttributes[] = $otherAttribute;
     }
@@ -96,7 +96,7 @@ final class Attribute
      * Get other attributes
      * @return array
      */
-    public function getOtherAttributes(): array
+    function getOtherAttributes(): array
     {
         return $this->otherAttributes;
     }
@@ -104,7 +104,7 @@ final class Attribute
     /**
      * Add rule
      */
-    public function addRule(Rule $rule): void
+    function addRule(Rule $rule): void
     {
         $rule->setAttribute($this);
         $rule->setValidation($this->validation);
@@ -114,7 +114,7 @@ final class Attribute
     /**
      * Get rule
      */
-    public function getRule(string $ruleKey): ?Rule
+    function getRule(string $ruleKey): ?Rule
     {
         return $this->rules[$ruleKey] ?? null;
     }
@@ -123,7 +123,7 @@ final class Attribute
      * Get rules
      * @return array<string,Rule>
      */
-    public function getRules(): array
+    function getRules(): array
     {
         return $this->rules;
     }
@@ -131,7 +131,7 @@ final class Attribute
     /**
      * Check the $ruleKey has in the rule
      */
-    public function hasRule(string $ruleKey): bool
+    function hasRule(string $ruleKey): bool
     {
         return isset($this->rules[$ruleKey]);
     }
@@ -139,7 +139,7 @@ final class Attribute
     /**
      * Set required
      */
-    public function setRequired(bool $required): void
+    function setRequired(bool $required): void
     {
         $this->required = $required;
     }
@@ -147,7 +147,7 @@ final class Attribute
     /**
      * Set rule is required
      */
-    public function isRequired(): bool
+    function isRequired(): bool
     {
         return $this->required;
     }
@@ -155,7 +155,7 @@ final class Attribute
     /**
      * Get key
      */
-    public function getKey(): string
+    function getKey(): string
     {
         return $this->key;
     }
@@ -164,7 +164,7 @@ final class Attribute
      * Get key indexes
      * @return array
      */
-    public function getKeyIndexes(): array
+    function getKeyIndexes(): array
     {
         return $this->keyIndexes;
     }
@@ -173,7 +173,7 @@ final class Attribute
      * Get value
      * @return mixed
      */
-    public function getValue(?string $key = null)
+    function getValue(?string $key = null)
     {
         if ($key && $this->isArrayAttribute()) {
             $key = $this->resolveSiblingKey($key);
@@ -189,7 +189,7 @@ final class Attribute
     /**
      * Get that is array attribute
      */
-    public function isArrayAttribute(): bool
+    function isArrayAttribute(): bool
     {
         return \sizeof($this->getKeyIndexes()) > 0;
     }
@@ -197,7 +197,7 @@ final class Attribute
     /**
      * Check this attribute is using dot notation
      */
-    public function isUsingDotNotation(): bool
+    function isUsingDotNotation(): bool
     {
         return \strpos($this->getKey(), '.') !== false;
     }
@@ -205,7 +205,7 @@ final class Attribute
     /**
      * Resolve sibling key
      */
-    public function resolveSiblingKey(string $key): string
+    function resolveSiblingKey(string $key): string
     {
         $indexes        = $this->getKeyIndexes();
         $keys           = \explode('*', $key);
@@ -221,7 +221,7 @@ final class Attribute
     /**
      * Get humanize key
      */
-    public function getHumanizedKey(): string
+    function getHumanizedKey(): string
     {
         $primaryAttribute = $this->getPrimaryAttribute();
         $key              = \str_replace('_', ' ', $this->key);
@@ -243,7 +243,7 @@ final class Attribute
     /**
      * Set alias
      */
-    public function setAlias(string $alias): void
+    function setAlias(string $alias): void
     {
         $this->alias = $alias;
     }
@@ -251,7 +251,7 @@ final class Attribute
     /**
      * Get alias
      */
-    public function getAlias(): ?string
+    function getAlias(): ?string
     {
         return $this->alias;
     }

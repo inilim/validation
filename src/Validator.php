@@ -3,12 +3,13 @@
 namespace Rakit\Validation;
 
 use Rakit\Validation\Rule;
+use Rakit\Validation\Validation;
 
 /**
  * @psalm-type TypeVarRuleInstraction = string|array<string|\Closure|Rule>
  * @psalm-type TypeVarRulesInstraction = array<string,TypeVarRuleInstraction>
  */
-class Validator
+final class Validator
 {
     use Traits\TranslationsTrait, Traits\MessagesTrait;
 
@@ -26,21 +27,17 @@ class Validator
 
     /**
      * Constructor
-     *
      * @param array $messages
-     * @return void
      */
-    public function __construct(array $messages = [])
+    function __construct(array $messages = [])
     {
         $this->messages = $messages;
     }
 
     /**
      * Get validator object from given $key
-     *
-     * @return Rule|null
      */
-    public function getRule(string $key)
+    function getRule(string $key): ?Rule
     {
         $rule = $this->rules[$key] ?? $this->getBaseRule($key);
 
@@ -113,7 +110,7 @@ class Validator
      *
      * @param Rule|class-string<Rule>|callable():Rule $rule recommend class-string or callable
      */
-    public function addRule(string $name, $rule): self
+    function addRule(string $name, $rule): self
     {
         if (!$this->allowRuleOverride && $this->getBaseRule($name) !== null) {
             throw new RuleQuashException(
@@ -128,26 +125,22 @@ class Validator
 
     /**
      * Validate $inputs
-     *
      * @param array $inputs
      * @param TypeVarRulesInstraction $rulesInstruction
      * @param array $messages
-     * @return Validation
      */
-    public function validate(array $inputs, array $rulesInstruction, array $messages = []): Validation
+    function validate(array $inputs, array $rulesInstruction, array $messages = []): Validation
     {
         return $this->make($inputs, $rulesInstruction, $messages)->validate();
     }
 
     /**
      * Given $inputs, $rulesInstruction and $messages to make the Validation class instance
-     *
      * @param mixed[] $inputs
      * @param TypeVarRulesInstraction $rulesInstruction
      * @param array $messages
-     * @return Validation
      */
-    public function make(array $inputs, array $rulesInstruction, array $messages = []): Validation
+    function make(array $inputs, array $rulesInstruction, array $messages = []): Validation
     {
         $validation = new Validation(
             $this,
@@ -162,11 +155,9 @@ class Validator
 
     /**
      * Magic invoke method to make Rule instance
-     *
-     * @return Rule
      * @throws RuleNotFoundException
      */
-    public function __invoke(): Rule
+    function __invoke(): Rule
     {
         $args     = \func_get_args();
         /** @var array<string|\Closure> $args */
@@ -187,9 +178,33 @@ class Validator
     }
 
     /**
+     * Set rule can allow to be overrided
+     */
+    function allowRuleOverride(bool $status = false): void
+    {
+        $this->allowRuleOverride = $status;
+    }
+
+    /**
+     * Set this can use humanize keys
+     */
+    function setUseHumanizedKeys(bool $useHumanizedKeys = true): void
+    {
+        $this->useHumanizedKeys = $useHumanizedKeys;
+    }
+
+    /**
+     * Get $this->useHumanizedKeys value
+     */
+    function isUsingHumanizedKey(): bool
+    {
+        return $this->useHumanizedKeys;
+    }
+
+    /**
      * @return null|class-string<Rule>
      */
-    protected function getBaseRule(string $key)
+    protected function getBaseRule(string $key): ?string
     {
         // if someone thinks that it is better to make an array here, then this is not the case
         switch ($key) {
@@ -291,37 +306,5 @@ class Validator
             default:
                 return null;
         }
-    }
-
-    /**
-     * Set rule can allow to be overrided
-     *
-     * @param boolean $status
-     * @return void
-     */
-    public function allowRuleOverride(bool $status = false)
-    {
-        $this->allowRuleOverride = $status;
-    }
-
-    /**
-     * Set this can use humanize keys
-     *
-     * @param boolean $useHumanizedKeys
-     * @return void
-     */
-    public function setUseHumanizedKeys(bool $useHumanizedKeys = true)
-    {
-        $this->useHumanizedKeys = $useHumanizedKeys;
-    }
-
-    /**
-     * Get $this->useHumanizedKeys value
-     *
-     * @return void
-     */
-    public function isUsingHumanizedKey(): bool
-    {
-        return $this->useHumanizedKeys;
     }
 }
