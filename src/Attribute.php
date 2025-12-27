@@ -191,7 +191,7 @@ final class Attribute
      */
     function isArrayAttribute(): bool
     {
-        return \sizeof($this->getKeyIndexes()) > 0;
+        return \count($this->getKeyIndexes()) > 0;
     }
 
     /**
@@ -209,11 +209,12 @@ final class Attribute
     {
         $indexes        = $this->getKeyIndexes();
         $keys           = \explode('*', $key);
-        $countAsterisks = \sizeof($keys) - 1;
-        if (\sizeof($indexes) < $countAsterisks) {
-            $indexes = \array_merge($indexes, \array_fill(0, $countAsterisks - \sizeof($indexes), "*"));
+        $countAsterisks = \count($keys) - 1;
+        if (\count($indexes) < $countAsterisks) {
+            $indexes = \array_merge($indexes, \array_fill(0, $countAsterisks - \count($indexes), "*"));
         }
-        $args = \array_merge([\str_replace('*', '%s', $key)], $indexes);
+        // $args = \array_merge([\str_replace('*', '%s', $key)], $indexes);
+        $args = \array_merge([\strtr($key, ['*' => '%s'])], $indexes);
 
         return \call_user_func_array('sprintf', $args);
     }
@@ -224,12 +225,13 @@ final class Attribute
     function getHumanizedKey(): string
     {
         $primaryAttribute = $this->getPrimaryAttribute();
-        $key              = \str_replace('_', ' ', $this->key);
+        // $key              = \str_replace('_', ' ', $this->key);
+        $key              = \strtr($this->key, ['_' => ' ']);
 
         // Resolve key from array validation
         if ($primaryAttribute) {
             $split = \explode('.', $key);
-            $key   = \implode(' ',  \array_map(static function ($word) {
+            $key   = \implode(' ',  \array_map(static function (string $word) {
                 if (\is_numeric($word)) {
                     $word = $word + 1;
                 }

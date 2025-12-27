@@ -23,14 +23,19 @@ trait SizeTrait
             $value = (float) $value;
         }
 
-        if (\is_int($value) || \is_float($value)) {
+        $typeValue = \gettype($value);
+
+        if ($typeValue === 'integer' || $typeValue === 'double') {
+            /** @var int|float $value */
             return (float) $value;
-        } elseif (\is_string($value)) {
+        } elseif ($typeValue === 'string') {
+            /** @var string $value */
             return (float) \mb_strlen($value, 'UTF-8');
         } elseif ($this->isUploadedFileValue($value)) {
             return (float) $value['size'];
-        } elseif (\is_array($value)) {
-            return (float) \sizeof($value);
+        } elseif ($typeValue === 'array') {
+            /** @var array $value */
+            return (float) \count($value);
         } else {
             return false;
         }
@@ -92,7 +97,7 @@ trait SizeTrait
      * @param mixed $value
      * @return bool
      */
-    public function isUploadedFileValue($value): bool
+    function isUploadedFileValue($value): bool
     {
         if (!\is_array($value)) {
             return false;

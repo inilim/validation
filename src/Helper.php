@@ -12,7 +12,7 @@ class Helper
      * @param  string $value
      * @return bool
      */
-    public static function strIs(string $pattern, string $value): bool
+    static function strIs(string $pattern, string $value): bool
     {
         if ($pattern == $value) {
             return true;
@@ -36,7 +36,7 @@ class Helper
      * @param  string $key
      * @return bool
      */
-    public static function arrayHas(array $array, string $key): bool
+    static function arrayHas(array $array, string $key): bool
     {
         if (\array_key_exists($key, $array)) {
             return true;
@@ -62,7 +62,7 @@ class Helper
      * @param  mixed       $default
      * @return mixed
      */
-    public static function arrayGet(array $array, $key, $default = null)
+    static function arrayGet(array $array, $key, $default = null)
     {
         if ($key === null) {
             return $array;
@@ -91,17 +91,23 @@ class Helper
      * @param  string $prepend
      * @return array
      */
-    public static function arrayDot(array $array, string $prepend = ''): array
+    static function arrayDot(array $array, string $prepend = ''): array
     {
         $results = [];
 
-        foreach ($array as $key => $value) {
-            if (\is_array($value) && ! empty($value)) {
-                $results = \array_merge($results, static::arrayDot($value, $prepend . $key . '.'));
-            } else {
-                $results[$prepend . $key] = $value;
+        $flatten = static function ($data, $prefix) use (&$results, &$flatten): void {
+            foreach ($data as $key => $value) {
+                $newKey = $prefix . $key;
+
+                if (\is_array($value) && ! empty($value)) {
+                    $flatten($value, $newKey . '.');
+                } else {
+                    $results[$newKey] = $value;
+                }
             }
-        }
+        };
+
+        $flatten($array, $prepend);
 
         return $results;
     }
@@ -116,7 +122,7 @@ class Helper
      * @param bool              $overwrite
      * @return mixed
      */
-    public static function arraySet(&$target, $key, $value, $overwrite = true): array
+    static function arraySet(&$target, $key, $value, $overwrite = true): array
     {
         if ($key === null) {
             if ($overwrite) {
@@ -171,7 +177,7 @@ class Helper
      * @param  string|array $key
      * @return mixed
      */
-    public static function arrayUnset(&$target, $key)
+    static function arrayUnset(&$target, $key)
     {
         if (!\is_array($target)) {
             return $target;
@@ -200,7 +206,7 @@ class Helper
      * @param  string $delimiter
      * @return string
      */
-    public static function snakeCase(string $value, string $delimiter = '_'): string
+    static function snakeCase(string $value, string $delimiter = '_'): string
     {
         if (!\ctype_lower($value)) {
             $value = \preg_replace('/\s+/u', '', \ucwords($value));
@@ -218,7 +224,7 @@ class Helper
      * @param  string|null  $lastSeparator
      * @return string
      */
-    public static function join(array $pieces, string $separator, string $lastSeparator = null): string
+    static function join(array $pieces, string $separator, ?string $lastSeparator = null): string
     {
         if ($lastSeparator === null) {
             $lastSeparator = $separator;
@@ -226,7 +232,7 @@ class Helper
 
         $last = \array_pop($pieces);
 
-        switch (\sizeof($pieces)) {
+        switch (\count($pieces)) {
             case 0:
                 return $last ?: '';
             case 1:
@@ -244,13 +250,13 @@ class Helper
      * @param  string|null  $suffix
      * @return array
      */
-    public static function wraps(array $strings, string $prefix, string $suffix = null): array
+    static function wraps(array $strings, string $prefix, ?string $suffix = null): array
     {
         if ($suffix === null) {
             $suffix = $prefix;
         }
 
-        return \array_map(function ($str) use ($prefix, $suffix) {
+        return \array_map(static function ($str) use ($prefix, $suffix) {
             return $prefix . $str . $suffix;
         }, $strings);
     }
