@@ -376,7 +376,7 @@ class Validation
         $attributes = [];
 
         foreach ($data as $key => $value) {
-            if ((bool) preg_match('/^' . $pattern . '\z/', $key, $match)) {
+            if ((bool) \preg_match('/^' . $pattern . '\z/', $key, $match)) {
                 $attr = new Attribute($this, $key, null, $attribute->getRules());
                 $attr->setPrimaryAttribute($attribute);
                 $attr->setKeyIndexes(\array_slice($match, 1));
@@ -544,9 +544,10 @@ class Validation
      */
     protected function stringify($value): string
     {
-        if (\is_string($value) || \is_numeric($value)) {
+        $type = \gettype($value);
+        if ($type === 'string' || \is_numeric($value)) {
             return (string)$value;
-        } elseif (\is_array($value) || \is_object($value)) {
+        } elseif ($type === 'array' || $type === 'object') {
             return (string)\json_encode($value);
         } else {
             return '';
@@ -574,7 +575,7 @@ class Validation
             $params = [];
 
             if (\is_string($ruleInstruction)) {
-                list($ruleName, $params) = $this->parseRuleInstruction($ruleInstruction);
+                [$ruleName, $params] = $this->parseRuleInstruction($ruleInstruction);
                 $rule = $this->validator->__invoke($ruleName, ...$params);
             } elseif ($ruleInstruction instanceof Rule) {
                 $rule = $ruleInstruction;
@@ -630,7 +631,7 @@ class Validation
         foreach ($inputs as $key => $rules) {
             $exp = \explode(':', $key);
 
-            if (\sizeof($exp) > 1) {
+            if (\count($exp) > 1) {
                 // set attribute alias
                 $this->aliases[$exp[0]] = $exp[1];
             }

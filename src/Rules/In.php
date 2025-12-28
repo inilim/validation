@@ -22,7 +22,7 @@ class In extends Rule
      */
     public function fillParameters(array $params): Rule
     {
-        if (\sizeof($params) == 1 && \is_array($params[0])) {
+        if (\count($params) == 1 && \is_array($params[0])) {
             $params = $params[0];
         }
         $this->params['allowed_values'] = $params;
