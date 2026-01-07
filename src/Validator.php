@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation;
 
+use Inilim\Tool\VD;
 use Rakit\Validation\Rule;
 use Rakit\Validation\Validation;
 

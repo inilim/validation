@@ -2,15 +2,17 @@
 
 namespace Rakit\Validation\Rules;
 
+use Inilim\Tool\VD;
 use Rakit\Validation\Rule;
 
 class SameStrict extends Rule
 {
-
     protected string $message = "The :attribute must be same with :field";
 
     /** @var string[] */
     protected array $fillableParams = ['field'];
+    
+    protected bool $implicit = true;
 
     /**
      * Check the $value is valid
