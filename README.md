@@ -609,7 +609,7 @@ For example if you have validation like this
 $validation = $validator->validate([
     'enabled' => null
 ], [
-    'enabled' => 'default:1|required|in:0,1'
+    'enabled' => 'default:1|required|in:0,1',
     'published' => 'default:0|required|in:0,1'
 ]);
 
