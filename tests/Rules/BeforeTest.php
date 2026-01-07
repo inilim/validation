@@ -45,10 +45,10 @@ class BeforeTest extends \Rakit\Validation\Tests\TestCase
 
     /**
      * @dataProvider getInvalidDates
-     * @expectedException \Exception
      */
     public function testANonWellFormedDateCannotBeValidated($date)
     {
+        $this->expectException(\Exception::class);
         $this->validator->fillParameters(["tomorrow"])->check($date);
     }
 
@@ -81,11 +81,9 @@ class BeforeTest extends \Rakit\Validation\Tests\TestCase
         );
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testUserProvidedParamCannotBeValidatedBecauseItIsInvalid()
     {
+        $this->expectException(\Exception::class);
         $this->validator->fillParameters(["to,morrow"])->check("now");
     }
 }

@@ -544,11 +544,10 @@ class ValidatorTest extends \Rakit\Validation\Tests\TestCase
         $this->assertTrue($v2->passes());
     }
 
-    /**
-     * @expectedException \Rakit\Validation\RuleNotFoundException
-     */
     public function testNonExistentValidationRule()
     {
+        $this->expectException(\Rakit\Validation\RuleNotFoundException::class);
+        
         $validation = $this->validator->make([
             'name' => "some name"
         ], [
@@ -616,11 +615,9 @@ class ValidatorTest extends \Rakit\Validation\Tests\TestCase
         $this->assertTrue($validation->passes());
     }
 
-    /**
-     * @expectedException \Rakit\Validation\RuleQuashException
-     */
     public function testInternalValidationRuleCannotBeOverridden()
     {
+        $this->expectException(\Rakit\Validation\RuleQuashException::class);
 
         $this->validator->addRule('required', new Required());
 

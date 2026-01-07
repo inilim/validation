@@ -19,7 +19,7 @@ class Required extends Rule
     {
         $this->setAttributeAsRequired();
 
-        if (isset($this->attribute) and $this->attribute->hasRule('uploaded_file')) {
+        if ($this->attribute && $this->attribute->hasRule('uploaded_file')) {
             return $this->isValueFromUploadedFiles($value) and $value['error'] != \UPLOAD_ERR_NO_FILE;
         }
         $type = \gettype($value);
@@ -41,7 +41,7 @@ class Required extends Rule
      */
     protected function setAttributeAsRequired()
     {
-        if (isset($this->attribute)) {
+        if ($this->attribute) {
             $this->attribute->setRequired(true);
         }
     }

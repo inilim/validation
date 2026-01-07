@@ -10,9 +10,9 @@ abstract class Rule
 {
     protected string $key;
 
-    protected ?Attribute $attribute;
+    protected ?Attribute $attribute = null;
 
-    protected ?Validation $validation;
+    protected ?Validation $validation = null;
 
     protected bool $implicit = false;
 
@@ -50,7 +50,7 @@ abstract class Rule
      */
     function getKey(): string
     {
-        return $this->key ?: \get_class($this);
+        return isset($this->key) ? $this->key : \get_class($this);
     }
 
     function setAttribute(Attribute $attribute): void

@@ -29,7 +29,7 @@ class Present extends Rule
      */
     protected function setAttributeAsRequired()
     {
-        if (isset($this->attribute)) {
+        if ($this->attribute) {
             $this->attribute->setRequired(\true);
         }
     }
