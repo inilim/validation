@@ -86,4 +86,62 @@ class StrLenBetweenTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->rule->fillParameters(['min' => 1, 'max' => 'not numeric'])->check('abc');
     }
+    public function testAliasStringLengthBetween()
+    {
+        $validator = new \Rakit\Validation\Validator();
+        
+        // Test with main rule name
+        $validation1 = $validator->validate([
+            'test_string' => 'abc'
+        ], [
+            'test_string' => 'str_len_between:2,5'
+        ]);
+        
+        $this->assertTrue($validation1->passes());
+        
+        // Test with first alias
+        $validation2 = $validator->validate([
+            'test_string' => 'abc'
+        ], [
+            'test_string' => 'string_len_between:2,5'
+        ]);
+        
+        $this->assertTrue($validation2->passes());
+        
+        // Test with second alias
+        $validation3 = $validator->validate([
+            'test_string' => 'abc'
+        ], [
+            'test_string' => 'str_length_between:2,5'
+        ]);
+        
+        $this->assertTrue($validation3->passes());
+        
+        // Test with third alias
+        $validation4 = $validator->validate([
+            'test_string' => 'abc'
+        ], [
+            'test_string' => 'string_length_between:2,5'
+        ]);
+        
+        $this->assertTrue($validation4->passes());
+        
+        // Test with invalid data using main rule name
+        $validation5 = $validator->validate([
+            'test_string' => 'abcdefgh'  // 8 chars, but max is 5
+        ], [
+            'test_string' => 'str_len_between:2,5'
+        ]);
+        
+        $this->assertFalse($validation5->passes());
+        
+        // Test with invalid data using alias
+        $validation6 = $validator->validate([
+            'test_string' => 'abcdefgh'  // 8 chars, but max is 5
+        ], [
+            'test_string' => 'string_length_between:2,5'
+        ]);
+        
+        $this->assertFalse($validation6->passes());
+    }
 }

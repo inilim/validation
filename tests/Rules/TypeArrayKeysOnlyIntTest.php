@@ -55,4 +55,45 @@ class TypeArrayKeysOnlyIntTest extends \Rakit\Validation\Tests\TestCase
         $this->assertTrue($rule->check([-1 => 'negative', 0 => 'zero', 1 => 'positive']));
         $this->assertTrue($rule->check([100 => 'large_number', 5 => 'small_number']));
     }
+    
+    public function testAliasArrayKeysOnlyInteger()
+    {
+        $validator = new \Rakit\Validation\Validator();
+        
+        // Test with main rule name
+        $validation1 = $validator->validate([
+            'test_array' => [0 => 'value1', 1 => 'value2', 2 => 'value3']
+        ], [
+            'test_array' => 'array_keys_only_int'
+        ]);
+        
+        $this->assertTrue($validation1->passes());
+        
+        // Test with alias
+        $validation2 = $validator->validate([
+            'test_array' => [0 => 'value1', 1 => 'value2', 2 => 'value3']
+        ], [
+            'test_array' => 'array_keys_only_integer'
+        ]);
+        
+        $this->assertTrue($validation2->passes());
+        
+        // Test with invalid data using main rule name
+        $validation3 = $validator->validate([
+            'test_array' => ['key1' => 'value1', 'key2' => 'value2']
+        ], [
+            'test_array' => 'array_keys_only_int'
+        ]);
+        
+        $this->assertFalse($validation3->passes());
+        
+        // Test with invalid data using alias
+        $validation4 = $validator->validate([
+            'test_array' => ['key1' => 'value1', 'key2' => 'value2']
+        ], [
+            'test_array' => 'array_keys_only_integer'
+        ]);
+        
+        $this->assertFalse($validation4->passes());
+    }
 }

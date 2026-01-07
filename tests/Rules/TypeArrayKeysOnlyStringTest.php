@@ -56,4 +56,45 @@ class TypeArrayKeysOnlyStringTest extends \Rakit\Validation\Tests\TestCase
         $this->assertTrue($rule->check(['_underscore' => 'value', 'with-dash' => 'value2']));
         $this->assertTrue($rule->check(['123string' => 'value'])); // String starting with numbers is still a string key
     }
+    
+    public function testAliasArrayKeysOnlyString()
+    {
+        $validator = new \Rakit\Validation\Validator();
+        
+        // Test with main rule name
+        $validation1 = $validator->validate([
+            'test_array' => ['key1' => 'value1', 'key2' => 'value2', 'key3' => 'value3']
+        ], [
+            'test_array' => 'array_keys_only_str'
+        ]);
+        
+        $this->assertTrue($validation1->passes());
+        
+        // Test with alias
+        $validation2 = $validator->validate([
+            'test_array' => ['key1' => 'value1', 'key2' => 'value2', 'key3' => 'value3']
+        ], [
+            'test_array' => 'array_keys_only_string'
+        ]);
+        
+        $this->assertTrue($validation2->passes());
+        
+        // Test with invalid data using main rule name
+        $validation3 = $validator->validate([
+            'test_array' => [0 => 'value1', 1 => 'value2']
+        ], [
+            'test_array' => 'array_keys_only_str'
+        ]);
+        
+        $this->assertFalse($validation3->passes());
+        
+        // Test with invalid data using alias
+        $validation4 = $validator->validate([
+            'test_array' => [0 => 'value1', 1 => 'value2']
+        ], [
+            'test_array' => 'array_keys_only_string'
+        ]);
+        
+        $this->assertFalse($validation4->passes());
+    }
 }
