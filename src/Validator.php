@@ -253,9 +253,26 @@ final class Validator
             case 'int_strict':
             case 'integer_strict':
                 return Rules\IntStrict::class;
+            case 'str_strict':
+            case 'string_strict':
+                return Rules\StrStrict::class;
 
+                // array
             case 'array':
                 return Rules\TypeArray::class;
+            case 'array_keys_only_str':
+            case 'array_keys_only_string':
+                return Rules\TypeArrayKeysOnlyString::class;
+            case 'array_keys_only_int':
+            case 'array_keys_only_integer':
+                return Rules\TypeArrayKeysOnlyInt::class;
+            case 'array_count_min':
+                return Rules\ArrayCountMin::class;
+            case 'array_count_max':
+                return Rules\ArrayCountMax::class;
+            case 'array_count_between':
+                return Rules\ArrayCountBetween::class;
+
             case 'same':
                 return Rules\Same::class;
             case 'regex':

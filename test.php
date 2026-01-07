@@ -1,5 +1,6 @@
 <?php
 
+use Inilim\Tool\VD;
 use Rakit\Validation\Validator;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -7,13 +8,18 @@ require_once __DIR__ . '/vendor/autoload.php';
 $validator = new Validator;
 
 // make it
-$validation = $validator->make([], [
+$validation = $validator->make([
+    'test' => 123,
+    'skills' => ['1'],
+], [
+    'test'                  => 'required|int_strict',
     'name'                  => 'required',
     'email'                 => 'required|email',
     'password'              => 'required|min:6',
     'confirm_password'      => 'required|same:password',
-    'avatar'                => 'required|uploaded_file:0,500K,png,jpeg',
-    'skills'                => 'array',
-    'skills.*.id'           => 'required|numeric',
-    'skills.*.percentage'   => 'required|numeric'
+    'skills'                => 'required|array_count_between:2,3',
+    'skills.*'              => 'required|str_strict',
 ]);
+$validation->validate();
+
+VD::de($validation->errors());

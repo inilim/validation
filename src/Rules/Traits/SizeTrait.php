@@ -37,7 +37,7 @@ trait SizeTrait
             /** @var array $value */
             return (float) \count($value);
         } else {
-            return false;
+            return \false;
         }
     }
 
@@ -100,13 +100,13 @@ trait SizeTrait
     function isUploadedFileValue($value): bool
     {
         if (!\is_array($value)) {
-            return false;
+            return \false;
         }
 
         $keys = ['name', 'type', 'tmp_name', 'size', 'error'];
         foreach ($keys as $key) {
             if (!\array_key_exists($key, $value)) {
-                return false;
+                return \false;
             }
         }
 

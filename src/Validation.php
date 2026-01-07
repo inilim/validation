@@ -280,7 +280,7 @@ class Validation
         );
         $asteriskPos = \strpos($attributeKey, '*');
 
-        if (false === $asteriskPos || $asteriskPos === (\mb_strlen($attributeKey, 'UTF-8') - 1)) {
+        if (\false === $asteriskPos || $asteriskPos === (\mb_strlen($attributeKey, 'UTF-8') - 1)) {
             return $data;
         }
 
@@ -303,7 +303,7 @@ class Validation
         $key          = $attribute->getKey();
         $hasKey       = Helper::arrayHas($this->inputs, $key);
         $value        = $hasKey ? Helper::arrayGet($this->inputs, $key) : null;
-        $isEmptyValue = false === $this->requiredRule->check($value);
+        $isEmptyValue = \false === $this->requiredRule->check($value);
         // dde([
         //     '$isEmptyValue' => $isEmptyValue,
         //     '$key' => $key,

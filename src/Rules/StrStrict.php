@@ -4,18 +4,19 @@ namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Rule;
 
-class Email extends Rule
+class StrStrict extends Rule
 {
 
     /** @var string */
-    protected $message = "The :attribute is not valid email";
+    protected $message = "The :attribute must be string";
 
     /**
-     * Check $value is valid
+     * Check the $value is valid
+     *
      * @param mixed $value
      */
     public function check($value): bool
     {
-        return \filter_var($value, \FILTER_VALIDATE_EMAIL) !== \false;
+        return \is_string($value);
     }
 }

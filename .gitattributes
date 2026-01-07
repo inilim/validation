@@ -1,4 +1,11 @@
-# Exclude unused files
+# dirs
 /tests              export-ignore
+
+# files
 /phpunit.xml.dist   export-ignore
 /.travis.yml        export-ignore
+/test.php           export-ignore
+
+# ext
+/*.md               export-ignore
+/*.xml              export-ignore
