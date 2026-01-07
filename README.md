@@ -851,6 +851,54 @@ The field value under this rule must be same with `another_field` value.
 
 </details>
 
+<details><summary><strong>same_strict</strong>:another_field</summary>
+
+The field value under this rule must be same with `another_field` value using strict comparison (===).
+
+</details>
+
+<details><summary><strong>scalar</strong></summary>
+
+The field under this rule must be a scalar value (boolean, integer, float, or string).
+
+</details>
+
+<details><summary><strong>str_len_between</strong>:min,max</summary>
+
+The string field under this rule must have a length between the given min and max values (inclusive).
+
+</details>
+
+<details><summary><strong>array_count_between</strong>:min,max</summary>
+
+The array field under this rule must have a count between the given min and max values (inclusive).
+
+</details>
+
+<details><summary><strong>array_count_max</strong>:max</summary>
+
+The array field under this rule must have a count less than or equal to the given max value.
+
+</details>
+
+<details><summary><strong>array_count_min</strong>:min</summary>
+
+The array field under this rule must have a count greater than or equal to the given min value.
+
+</details>
+
+<details><summary><strong>type_array_keys_only_int</strong></summary>
+
+The array field under this rule must have only integer keys (no string keys allowed).
+
+</details>
+
+<details><summary><strong>type_array_keys_only_string</strong></summary>
+
+The array field under this rule must have only string keys (no integer keys allowed).
+
+</details>
+
 <details><summary><strong>regex</strong>:/your-regex/</summary>
 
 The field under this rule must be match with given regex.
