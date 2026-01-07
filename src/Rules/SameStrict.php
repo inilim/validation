@@ -11,8 +11,6 @@ class SameStrict extends Rule
 
     /** @var string[] */
     protected array $fillableParams = ['field'];
-    
-    protected bool $implicit = true;
 
     /**
      * Check the $value is valid
