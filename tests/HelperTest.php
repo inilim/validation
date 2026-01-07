@@ -5,7 +5,7 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Helper;
 use PHPUnit\Framework\TestCase;
 
-class HelperTest extends TestCase
+class HelperTest extends \Rakit\Validation\Tests\TestCase
 {
 
     public function testArrayHas()

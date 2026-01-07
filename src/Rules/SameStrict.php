@@ -4,9 +4,11 @@ namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Rule;
 
-class Same extends Rule
+class SameStrict extends Rule
 {
+
     protected string $message = "The :attribute must be same with :field";
+
     /** @var string[] */
     protected array $fillableParams = ['field'];
 
@@ -19,6 +21,6 @@ class Same extends Rule
         $this->requireParameters($this->fillableParams);
         $field = $this->parameter('field');
         $anotherValue = $this->getAttribute()->getValue($field);
-        return $value == $anotherValue;
+        return $value === $anotherValue;
     }
 }

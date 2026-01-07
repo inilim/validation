@@ -10,8 +10,7 @@ class Mimes extends Rule
 {
     use Traits\FileTrait;
 
-    /** @var string */
-    protected $message = "The :attribute file type must be :allowed_types";
+    protected string $message = "The :attribute file type must be :allowed_types";
 
     /** @var string|int */
     protected $maxSize = null;
@@ -20,7 +19,7 @@ class Mimes extends Rule
     protected $minSize = null;
 
     /** @var array */
-    protected $allowedTypes = [];
+    protected array $allowedTypes = [];
 
     /**
      * Given $params and assign $this->params
@@ -53,10 +52,9 @@ class Mimes extends Rule
 
     /**
      * Check the $value is valid
-     *
      * @param mixed $value
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $allowedTypes = $this->parameter('allowed_types');
 

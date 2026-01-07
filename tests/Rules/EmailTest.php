@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Email;
 use PHPUnit\Framework\TestCase;
 
-class EmailTest extends TestCase
+class EmailTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Email;
     }

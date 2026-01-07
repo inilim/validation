@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\AlphaSpaces;
 use PHPUnit\Framework\TestCase;
 
-class AlphaSpacesTest extends TestCase
+class AlphaSpacesTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new AlphaSpaces;
     }

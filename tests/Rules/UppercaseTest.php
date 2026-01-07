@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Uppercase;
 use PHPUnit\Framework\TestCase;
 
-class UppercaseTest extends TestCase
+class UppercaseTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Uppercase;
     }

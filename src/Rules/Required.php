@@ -8,23 +8,18 @@ class Required extends Rule
 {
     use Traits\FileTrait;
 
-    /** @var bool */
-    protected $implicit = true;
-
-    /** @var string */
-    protected $message = "The :attribute is required";
+    protected bool $implicit = true;
+    protected string $message = "The :attribute is required";
 
     /**
      * Check the $value is valid
-     *
      * @param mixed $value
-     * @return bool
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->setAttributeAsRequired();
 
-        if ($this->attribute and $this->attribute->hasRule('uploaded_file')) {
+        if (isset($this->attribute) and $this->attribute->hasRule('uploaded_file')) {
             return $this->isValueFromUploadedFiles($value) and $value['error'] != \UPLOAD_ERR_NO_FILE;
         }
         $type = \gettype($value);
@@ -46,7 +41,7 @@ class Required extends Rule
      */
     protected function setAttributeAsRequired()
     {
-        if ($this->attribute) {
+        if (isset($this->attribute)) {
             $this->attribute->setRequired(true);
         }
     }

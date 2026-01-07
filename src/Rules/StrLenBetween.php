@@ -2,13 +2,11 @@
 
 namespace Rakit\Validation\Rules;
 
-use Inilim\Tool\VD;
 use Rakit\Validation\Rule;
 
-class ArrayCountBetween extends Rule
+class StrLenBetween extends Rule
 {
-    protected string $message = "The :attribute must be array count between :min and :max";
-    /** @var string[] */
+    protected string $message = "The :attribute must be string length between :min and :max";
     protected array $fillableParams = ['min', 'max'];
 
     /**
@@ -19,7 +17,7 @@ class ArrayCountBetween extends Rule
     {
         $this->requireParameters($this->fillableParams);
 
-        if (!\is_array($value)) {
+        if (!\is_string($value)) {
             return \false;
         }
 
@@ -34,7 +32,7 @@ class ArrayCountBetween extends Rule
         $max = (int)$max;
         $min = (int)$min;
 
-        $valueSize = \count($value);
+        $valueSize = \mb_strlen($value, \mb_detect_encoding($value));
         return ($valueSize >= $min && $valueSize <= $max);
     }
 }

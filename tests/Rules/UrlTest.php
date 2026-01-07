@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Url;
 use PHPUnit\Framework\TestCase;
 
-class UrlTest extends TestCase
+class UrlTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Url;
     }

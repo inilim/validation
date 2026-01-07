@@ -6,25 +6,19 @@ use Rakit\Validation\Rule;
 
 class Date extends Rule
 {
-
-    /** @var string */
-    protected $message = "The :attribute is not valid date format";
-
+    protected string $message = "The :attribute is not valid date format";
     /** @var array */
-    protected $fillableParams = ['format'];
-
+    protected array $fillableParams = ['format'];
     /** @var array */
-    protected $params = [
+    protected array $params = [
         'format' => 'Y-m-d'
     ];
 
     /**
      * Check the $value is valid
-     *
      * @param mixed $value
-     * @return bool
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
 

@@ -6,7 +6,7 @@ use Rakit\Validation\Rules\Before;
 use PHPUnit\Framework\TestCase;
 use DateTime;
 
-class BeforeTest extends TestCase
+class BeforeTest extends \Rakit\Validation\Tests\TestCase
 {
 
     /**
@@ -14,7 +14,7 @@ class BeforeTest extends TestCase
      */
     protected $validator;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->validator = new Before();
     }

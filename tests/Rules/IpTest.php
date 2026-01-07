@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Ip;
 use PHPUnit\Framework\TestCase;
 
-class IpTest extends TestCase
+class IpTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Ip;
     }

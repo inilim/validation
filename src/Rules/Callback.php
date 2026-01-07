@@ -7,11 +7,9 @@ use Rakit\Validation\Rule;
 class Callback extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute is not valid";
-
+    protected string $message = "The :attribute is not valid";
     /** @var array */
-    protected $fillableParams = ['callback'];
+    protected array $fillableParams = ['callback'];
 
     /**
      * Set the Callback closure

@@ -273,8 +273,17 @@ final class Validator
             case 'array_count_between':
                 return Rules\ArrayCountBetween::class;
 
+                // string
+            case 'string_length_between':
+            case 'string_len_between':
+            case 'str_length_between':
+            case 'str_len_between':
+                return Rules\StrLenBetween::class;
+
             case 'same':
                 return Rules\Same::class;
+            case 'same_strict':
+                return Rules\SameStrict::class;
             case 'regex':
                 return Rules\Regex::class;
             case 'date':

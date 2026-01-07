@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Mimes;
 use PHPUnit\Framework\TestCase;
 
-class MimesTest extends TestCase
+class MimesTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Mimes();
     }

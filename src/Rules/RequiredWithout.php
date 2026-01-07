@@ -6,11 +6,8 @@ use Rakit\Validation\Rule;
 
 class RequiredWithout extends Required
 {
-    /** @var bool */
-    protected $implicit = true;
-
-    /** @var string */
-    protected $message = "The :attribute is required";
+    protected bool $implicit = true;
+    protected string $message = "The :attribute is required";
 
     /**
      * Given $params and assign $this->params

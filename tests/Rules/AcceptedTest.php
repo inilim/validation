@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Accepted;
 use PHPUnit\Framework\TestCase;
 
-class AcceptedTest extends TestCase
+class AcceptedTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Accepted;
     }

@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Ipv6;
 use PHPUnit\Framework\TestCase;
 
-class Ipv6Test extends TestCase
+class Ipv6Test extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Ipv6;
     }

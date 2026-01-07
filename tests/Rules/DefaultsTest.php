@@ -5,9 +5,9 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Defaults;
 use PHPUnit\Framework\TestCase;
 
-class DefaultsTest extends TestCase
+class DefaultsTest extends \Rakit\Validation\Tests\TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Defaults;
     }
@@ -16,7 +16,7 @@ class DefaultsTest extends TestCase
     {
         $this->assertTrue($this->rule->fillParameters([10])->check(0));
         $this->assertTrue($this->rule->fillParameters(['something'])->check(null));
-        $this->assertTrue($this->rule->fillParameters([[1,2,3]])->check(false));
-        $this->assertTrue($this->rule->fillParameters([[1,2,3]])->check([]));
+        $this->assertTrue($this->rule->fillParameters([[1, 2, 3]])->check(false));
+        $this->assertTrue($this->rule->fillParameters([[1, 2, 3]])->check([]));
     }
 }

@@ -6,10 +6,10 @@ use Rakit\Validation\Rules\Alpha;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class AlphaTest extends TestCase
+class AlphaTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Alpha;
     }

@@ -7,31 +7,25 @@ use Rakit\Validation\Rules\Interfaces\ModifyValue;
 
 class Defaults extends Rule implements ModifyValue
 {
-
-    /** @var string */
-    protected $message = "The :attribute default is :default";
-
+    protected string $message = "The :attribute default is :default";
     /** @var array */
-    protected $fillableParams = ['default'];
+    protected array $fillableParams = ['default'];
 
     /**
      * Check the $value is valid
-     *
      * @param mixed $value
-     * @return bool
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
-
         // $default = $this->parameter('default');
-        return true;
+        return \true;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function modifyValue($value)
+    function modifyValue($value)
     {
         return $this->isEmptyValue($value) ? $this->parameter('default') : $value;
     }

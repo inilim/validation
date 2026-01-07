@@ -11,8 +11,7 @@ class UploadedFile extends Rule implements BeforeValidate
 {
     use Traits\FileTrait, Traits\SizeTrait;
 
-    /** @var string */
-    protected $message = "The :attribute is not valid uploaded file";
+    protected string $message = "The :attribute is not valid uploaded file";
 
     /** @var string|int */
     protected $maxSize = null;
@@ -21,7 +20,7 @@ class UploadedFile extends Rule implements BeforeValidate
     protected $minSize = null;
 
     /** @var array */
-    protected $allowedTypes = [];
+    protected array $allowedTypes = [];
 
     /**
      * Given $params and assign $this->params
@@ -140,23 +139,23 @@ class UploadedFile extends Rule implements BeforeValidate
 
         // below is Required rule job
         if (!$this->isValueFromUploadedFiles($value) or $value['error'] == \UPLOAD_ERR_NO_FILE) {
-            return true;
+            return \true;
         }
 
         if (!$this->isUploadedFile($value)) {
-            return false;
+            return \false;
         }
 
         // just make sure there is no error
         if ($value['error']) {
-            return false;
+            return \false;
         }
 
         if ($minSize) {
             $bytesMinSize = $this->getBytesSize($minSize);
             if ($value['size'] < $bytesMinSize) {
                 $this->setMessage('The :attribute file is too small, minimum size is :min_size');
-                return false;
+                return \false;
             }
         }
 
@@ -164,7 +163,7 @@ class UploadedFile extends Rule implements BeforeValidate
             $bytesMaxSize = $this->getBytesSize($maxSize);
             if ($value['size'] > $bytesMaxSize) {
                 $this->setMessage('The :attribute file is too large, maximum size is :max_size');
-                return false;
+                return \false;
             }
         }
 
@@ -175,10 +174,10 @@ class UploadedFile extends Rule implements BeforeValidate
 
             if (!\in_array($ext, $allowedTypes)) {
                 $this->setMessage('The :attribute file type must be :allowed_types');
-                return false;
+                return \false;
             }
         }
 
-        return true;
+        return \true;
     }
 }

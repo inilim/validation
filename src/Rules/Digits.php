@@ -6,20 +6,15 @@ use Rakit\Validation\Rule;
 
 class Digits extends Rule
 {
-
-    /** @var string */
-    protected $message = "The :attribute must be numeric and must have an exact length of :length";
-
+    protected string $message = "The :attribute must be numeric and must have an exact length of :length";
     /** @var array */
-    protected $fillableParams = ['length'];
+    protected array $fillableParams = ['length'];
 
     /**
      * Check the $value is valid
-     *
      * @param mixed $value
-     * @return bool
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
 

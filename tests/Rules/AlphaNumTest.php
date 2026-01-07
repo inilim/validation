@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\AlphaNum;
 use PHPUnit\Framework\TestCase;
 
-class AlphaNumTest extends TestCase
+class AlphaNumTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new AlphaNum;
     }

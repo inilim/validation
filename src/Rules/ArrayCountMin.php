@@ -7,17 +7,15 @@ use Rakit\Validation\Rule;
 
 class ArrayCountMin extends Rule
 {
-    /** @var string */
-    protected $message = "The :attribute must be array minimum is count :min";
-
-    /** @var array */
-    protected $fillableParams = ['min'];
+    protected string $message = "The :attribute must be array minimum is count :min";
+    /** @var string[] */
+    protected array $fillableParams = ['min'];
 
     /**
      * Check the $value is valid
      * @param mixed $value
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
 

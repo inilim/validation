@@ -5,7 +5,7 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\ErrorBag;
 use PHPUnit\Framework\TestCase;
 
-class ErrorBagTest extends TestCase
+class ErrorBagTest extends \Rakit\Validation\Tests\TestCase
 {
 
     public function testCount()

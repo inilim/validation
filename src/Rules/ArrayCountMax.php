@@ -7,17 +7,16 @@ use Rakit\Validation\Rule;
 
 class ArrayCountMax extends Rule
 {
-    /** @var string */
-    protected $message = "The :attribute must be array maximum is count :max";
+    protected string $message = "The :attribute must be array maximum is count :max";
 
-    /** @var array */
-    protected $fillableParams = ['max'];
+    /** @var string[] */
+    protected array $fillableParams = ['max'];
 
     /**
      * Check the $value is valid
      * @param mixed $value
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
 

@@ -6,10 +6,10 @@ use Rakit\Validation\Rules\Required;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-class RequiredTest extends TestCase
+class RequiredTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Required;
     }

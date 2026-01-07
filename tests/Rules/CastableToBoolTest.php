@@ -2,12 +2,12 @@
 
 namespace Rakit\Validation\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Rakit\Validation\Rules\CastableToBool;
 
-class CastableToBoolTest extends TestCase
+class CastableToBoolTest extends \Rakit\Validation\Tests\TestCase
 {
-    public function setUp()
+
+    protected function setUp(): void
     {
         $this->rule = new CastableToBool;
     }

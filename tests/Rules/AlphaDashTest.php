@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\AlphaDash;
 use PHPUnit\Framework\TestCase;
 
-class AlphaDashTest extends TestCase
+class AlphaDashTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new AlphaDash;
     }

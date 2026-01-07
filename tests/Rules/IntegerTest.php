@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Integer;
 use PHPUnit\Framework\TestCase;
 
-class IntegerTest extends TestCase
+class IntegerTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Integer;
     }

@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Callback;
 use PHPUnit\Framework\TestCase;
 
-class CallbackTest extends TestCase
+class CallbackTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Callback;
         $this->rule->setCallback(function ($value) {

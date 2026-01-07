@@ -8,12 +8,12 @@ use Rakit\Validation\Rule;
 use Rakit\Validation\Rules\UploadedFile;
 use Rakit\Validation\Validator;
 
-class ValidatorTest extends TestCase
+class ValidatorTest extends \Rakit\Validation\Tests\TestCase
 {
     /** @var Validator */
     protected $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->validator = new Validator;
     }

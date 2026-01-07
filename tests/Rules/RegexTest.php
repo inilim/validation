@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Regex;
 use PHPUnit\Framework\TestCase;
 
-class RegexTest extends TestCase
+class RegexTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Regex;
     }

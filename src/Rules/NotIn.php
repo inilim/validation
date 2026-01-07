@@ -8,11 +8,8 @@ use Rakit\Validation\Rule;
 class NotIn extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute is not allowing :disallowed_values";
-
-    /** @var bool */
-    protected $strict = false;
+    protected string $message = "The :attribute is not allowing :disallowed_values";
+    protected bool $strict = false;
 
     /**
      * Given $params and assign the $this->params
@@ -44,9 +41,8 @@ class NotIn extends Rule
      * Check the $value is valid
      *
      * @param mixed $value
-     * @return bool
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters(['disallowed_values']);
 

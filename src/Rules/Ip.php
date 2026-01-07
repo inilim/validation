@@ -6,16 +6,13 @@ use Rakit\Validation\Rule;
 
 class Ip extends Rule
 {
-
-    /** @var string */
-    protected $message = "The :attribute is not valid IP Address";
+    protected string $message = "The :attribute is not valid IP Address";
 
     /**
      * Check the $value is valid
-     *
      * @param mixed $value
      */
-    public function check($value): bool
+    function check($value): bool
     {
         return \filter_var($value, \FILTER_VALIDATE_IP) !== \false;
     }

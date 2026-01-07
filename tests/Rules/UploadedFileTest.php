@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\UploadedFile;
 use PHPUnit\Framework\TestCase;
 
-class UploadedFileTest extends TestCase
+class UploadedFileTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new UploadedFile();
     }

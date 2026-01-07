@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Json;
 use PHPUnit\Framework\TestCase;
 
-class JsonTest extends TestCase
+class JsonTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Json;
     }

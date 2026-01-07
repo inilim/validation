@@ -4,10 +4,9 @@ namespace Rakit\Validation\Tests;
 
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-class ValidationTest extends TestCase
+class ValidationTest extends \Rakit\Validation\Tests\TestCase
 {
     /**
      * @param string $rules

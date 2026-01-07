@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\Ipv4;
 use PHPUnit\Framework\TestCase;
 
-class Ipv4Test extends TestCase
+class Ipv4Test extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new Ipv4;
     }

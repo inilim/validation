@@ -5,10 +5,10 @@ namespace Rakit\Validation\Tests;
 use Rakit\Validation\Rules\DigitsBetween;
 use PHPUnit\Framework\TestCase;
 
-class DigitsBetweenTest extends TestCase
+class DigitsBetweenTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->rule = new DigitsBetween;
     }

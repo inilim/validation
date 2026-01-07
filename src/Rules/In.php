@@ -7,20 +7,15 @@ use Rakit\Validation\Rule;
 
 class In extends Rule
 {
-
-    /** @var string */
-    protected $message = "The :attribute only allows :allowed_values";
-
-    /** @var bool */
-    protected $strict = false;
+    protected string $message = "The :attribute only allows :allowed_values";
+    protected bool $strict = false;
 
     /**
      * Given $params and assign the $this->params
-     *
      * @param array $params
      * @return self
      */
-    public function fillParameters(array $params): Rule
+    function fillParameters(array $params): Rule
     {
         if (\count($params) == 1 && \is_array($params[0])) {
             $params = $params[0];
@@ -31,11 +26,10 @@ class In extends Rule
 
     /**
      * Set strict value
-     *
      * @param bool $strict
      * @return void
      */
-    public function strict(bool $strict = true)
+    function strict(bool $strict = \true)
     {
         $this->strict = $strict;
     }
@@ -45,7 +39,7 @@ class In extends Rule
      *
      * @param mixed $value
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters(['allowed_values']);
 

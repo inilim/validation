@@ -8,29 +8,24 @@ use Rakit\Validation\MissingRequiredParameterException;
 
 abstract class Rule
 {
-    /** @var string */
-    protected $key;
+    protected string $key;
 
-    /** @var Attribute|null */
-    protected $attribute;
+    protected ?Attribute $attribute;
 
-    /** @var Validation|null */
-    protected $validation;
+    protected ?Validation $validation;
 
-    /** @var bool */
-    protected $implicit = false;
+    protected bool $implicit = false;
 
     /** @var array */
-    protected $params = [];
+    protected array $params = [];
 
     /** @var array */
-    protected $paramsTexts = [];
+    protected array $paramsTexts = [];
 
-    /** @var array */
-    protected $fillableParams = [];
+    /** @var string[] */
+    protected array $fillableParams = [];
 
-    /** @var string */
-    protected $message = "The :attribute is invalid";
+    protected string $message = "The :attribute is invalid";
 
     /**
      * @param mixed $value

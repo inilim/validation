@@ -3,18 +3,13 @@
 namespace Rakit\Validation\Tests;
 
 use Rakit\Validation\Rules\After;
-use PHPUnit\Framework\TestCase;
-use DateTime;
 
-class AfterTest extends TestCase
+class AfterTest extends \Rakit\Validation\Tests\TestCase
 {
 
-    /**
-     * @var \Rakit\Validation\Rules\After
-     */
-    protected $validator;
+    protected After $validator;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->validator = new After();
     }
@@ -48,7 +43,7 @@ class AfterTest extends TestCase
 
     public function getInvalidDates()
     {
-        $now = new DateTime();
+        $now = new \DateTime();
 
         return [
             [12], //12 instead of 2012
@@ -62,7 +57,7 @@ class AfterTest extends TestCase
 
     public function getValidDates()
     {
-        $now = new DateTime();
+        $now = new \DateTime();
 
         return [
             [2016],
@@ -77,7 +72,7 @@ class AfterTest extends TestCase
     public function testProvidedDateFailsValidation()
     {
 
-        $now = (new DateTime("today"))->format("Y-m-d");
+        $now = (new \DateTime("today"))->format("Y-m-d");
         $today = "today";
 
         $this->assertFalse(

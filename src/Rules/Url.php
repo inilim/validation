@@ -6,9 +6,7 @@ use Rakit\Validation\Rule;
 
 class Url extends Rule
 {
-
-    /** @var string */
-    protected $message = "The :attribute is not valid url";
+    protected string $message = "The :attribute is not valid url";
 
     /**
      * Given $params and assign $this->params
@@ -53,14 +51,14 @@ class Url extends Rule
                 $method = 'validate' . \ucfirst($scheme) . 'Scheme';
                 if (\method_exists($this, $method)) {
                     if ($this->{$method}($value)) {
-                        return true;
+                        return \true;
                     }
                 } elseif ($this->validateCommonScheme($value, $scheme)) {
-                    return true;
+                    return \true;
                 }
             }
 
-            return false;
+            return \false;
         }
     }
 
@@ -72,7 +70,7 @@ class Url extends Rule
      */
     public function validateBasic($value): bool
     {
-        return \filter_var($value, \FILTER_VALIDATE_URL) !== false;
+        return \filter_var($value, \FILTER_VALIDATE_URL) !== \false;
     }
 
     /**
