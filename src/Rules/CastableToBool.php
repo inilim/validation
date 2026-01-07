@@ -4,10 +4,10 @@ namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Rule;
 
-class Boolean extends Rule
+class CastableToBool extends Rule
 {
     /** @var string */
-    protected $message = "The :attribute must be a boolean";
+    protected $message = "The :attribute must be a castable to boolean";
 
     /**
      * Check the value is valid

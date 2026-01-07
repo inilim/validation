@@ -3,13 +3,13 @@
 namespace Rakit\Validation\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rakit\Validation\Rules\Boolean;
+use Rakit\Validation\Rules\CastableToBool;
 
-class BooleanTest extends TestCase
+class CastableToBoolTest extends TestCase
 {
     public function setUp()
     {
-        $this->rule = new Boolean;
+        $this->rule = new CastableToBool;
     }
 
     public function testValids()

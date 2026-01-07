@@ -4,11 +4,11 @@ namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Rule;
 
-class Integer extends Rule
+class FloatStrict extends Rule
 {
 
     /** @var string */
-    protected $message = "The :attribute must be integer";
+    protected $message = "The :attribute must be float";
 
     /**
      * Check the $value is valid
@@ -18,6 +18,6 @@ class Integer extends Rule
      */
     public function check($value): bool
     {
-        return \filter_var($value, \FILTER_VALIDATE_INT) !== \false;
+        return \is_float($value);
     }
 }

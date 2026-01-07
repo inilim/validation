@@ -45,6 +45,6 @@ class Extension extends Rule
         $this->setParameterText('allowed_extensions', $allowedExtensionsText);
 
         $ext = \strtolower(\pathinfo($value, \PATHINFO_EXTENSION));
-        return ($ext && \in_array($ext, $allowedExtensions)) ? true : false;
+        return ($ext && \in_array($ext, $allowedExtensions)) ? \true : \false;
     }
 }

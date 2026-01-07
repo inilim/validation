@@ -43,7 +43,10 @@ final class Validator
 
         if ($rule === null) return null;
 
-        if (\is_object($rule)) {
+        $typeRule = \gettype($rule);
+
+        if ($typeRule === 'object') {
+            /** @var object $rule */
             if ($rule instanceof Rule) {
                 $rule->setKey($key);
                 return $rule;
@@ -64,7 +67,8 @@ final class Validator
             ));
         }
 
-        if (\is_string($rule)) {
+        if ($typeRule === 'string') {
+            /** @var string $rule */
             if (!\class_exists($rule, true)) {
                 throw new RuleNotFoundException(\sprintf(
                     'class rule "%s" not found',
@@ -230,10 +234,26 @@ final class Validator
                 return Rules\Between::class;
             case 'url':
                 return Rules\Url::class;
+            case 'int':
             case 'integer':
                 return Rules\Integer::class;
+            case 'bool':
             case 'boolean':
-                return Rules\Boolean::class;
+                return Rules\CastableToBool::class;
+            case 'scalar':
+                return Rules\Scalar::class;
+
+                // strict
+            case 'bool_strict':
+            case 'boolean_strict':
+                return Rules\BoolStrict::class;
+            case 'float_strict':
+            case 'double_strict':
+                return Rules\FloatStrict::class;
+            case 'int_strict':
+            case 'integer_strict':
+                return Rules\IntStrict::class;
+
             case 'array':
                 return Rules\TypeArray::class;
             case 'same':
@@ -259,9 +279,8 @@ final class Validator
             case 'digits_between':
                 return Rules\DigitsBetween::class;
             case 'defaults':
-                return Rules\Defaults::class;
             case 'default':
-                return Rules\Defaults::class; // alias of defaults
+                return Rules\Defaults::class;
 
             case 'ip':
                 return Rules\Ip::class;

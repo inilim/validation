@@ -145,7 +145,7 @@ class ErrorBag
      * Get the first message from existing keys
      *
      * @param string $format
-     * @param boolean $dotNotation
+     * @param bool $dotNotation
      * @return array
      */
     public function firstOfAll(string $format = ':message', bool $dotNotation = false): array

@@ -29,8 +29,8 @@ class Between extends Rule
 
         $valueSize = $this->getValueSize($value);
 
-        if (!is_numeric($valueSize)) {
-            return false;
+        if (!\is_numeric($valueSize)) {
+            return \false;
         }
 
         return ($valueSize >= $min && $valueSize <= $max);

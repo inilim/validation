@@ -44,7 +44,6 @@ class In extends Rule
      * Check $value is existed
      *
      * @param mixed $value
-     * @return bool
      */
     public function check($value): bool
     {

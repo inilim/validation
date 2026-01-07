@@ -18,6 +18,6 @@ class Alpha extends Rule
      */
     public function check($value): bool
     {
-        return is_string($value) && preg_match('/^[\pL\pM]+$/u', $value);
+        return \is_string($value) && \preg_match('/^[\pL\pM]+$/u', $value);
     }
 }

@@ -40,7 +40,6 @@ class Defaults extends Rule implements ModifyValue
      * Check $value is empty value
      *
      * @param mixed $value
-     * @return boolean
      */
     protected function isEmptyValue($value): bool
     {

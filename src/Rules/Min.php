@@ -28,7 +28,7 @@ class Min extends Rule
         $valueSize = $this->getValueSize($value);
 
         if (!\is_numeric($valueSize)) {
-            return false;
+            return \false;
         }
 
         return $valueSize >= $min;

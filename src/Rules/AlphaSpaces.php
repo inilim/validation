@@ -18,10 +18,10 @@ class AlphaSpaces extends Rule
      */
     public function check($value): bool
     {
-        if (! is_string($value)) {
-            return false;
+        if (! \is_string($value)) {
+            return \false;
         }
 
-        return preg_match('/^[\pL\pM\s]+$/u', $value) > 0;
+        return \preg_match('/^[\pL\pM\s]+$/u', $value) > 0;
     }
 }

@@ -55,7 +55,6 @@ class Mimes extends Rule
      * Check the $value is valid
      *
      * @param mixed $value
-     * @return bool
      */
     public function check($value): bool
     {
@@ -67,17 +66,17 @@ class Mimes extends Rule
         }
 
         // below is Required rule job
-        if (!$this->isValueFromUploadedFiles($value) or $value['error'] == UPLOAD_ERR_NO_FILE) {
-            return true;
+        if (!$this->isValueFromUploadedFiles($value) or $value['error'] == \UPLOAD_ERR_NO_FILE) {
+            return \true;
         }
 
         if (!$this->isUploadedFile($value)) {
-            return false;
+            return \false;
         }
 
         // just make sure there is no error
         if ($value['error']) {
-            return false;
+            return \false;
         }
 
         if (!empty($allowedTypes)) {
@@ -86,10 +85,10 @@ class Mimes extends Rule
             unset($guesser);
 
             if (!\in_array($ext, $allowedTypes)) {
-                return false;
+                return \false;
             }
         }
 
-        return true;
+        return \true;
     }
 }

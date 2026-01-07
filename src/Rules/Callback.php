@@ -3,8 +3,6 @@
 namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Rule;
-use InvalidArgumentException;
-use Closure;
 
 class Callback extends Rule
 {
@@ -18,10 +16,10 @@ class Callback extends Rule
     /**
      * Set the Callback closure
      *
-     * @param Closure $callback
+     * @param \Closure $callback
      * @return self
      */
-    public function setCallback(Closure $callback): Rule
+    public function setCallback(\Closure $callback): Rule
     {
         return $this->setParameter('callback', $callback);
     }
@@ -30,7 +28,6 @@ class Callback extends Rule
      * Check the $value is valid
      *
      * @param mixed $value
-     * @return bool
      * @throws \Exception
      */
     public function check($value): bool
@@ -38,9 +35,9 @@ class Callback extends Rule
         $this->requireParameters($this->fillableParams);
 
         $callback = $this->parameter('callback');
-        if (false === $callback instanceof Closure) {
+        if (\false === $callback instanceof \Closure) {
             $key = $this->attribute->getKey();
-            throw new InvalidArgumentException('Callback rule for "' . $key . '" is not callable.');
+            throw new \InvalidArgumentException('Callback rule for "' . $key . '" is not callable.');
         }
 
         // TODO WHY BIND?????????????
@@ -49,11 +46,11 @@ class Callback extends Rule
 
         if (\is_string($invalidMessage)) {
             $this->setMessage($invalidMessage);
-            return false;
-        } elseif (false === $invalidMessage) {
-            return false;
+            return \false;
+        } elseif (\false === $invalidMessage) {
+            return \false;
         }
 
-        return true;
+        return \true;
     }
 }

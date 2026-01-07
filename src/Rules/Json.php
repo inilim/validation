@@ -14,20 +14,23 @@ class Json extends Rule
      * Check the $value is valid
      *
      * @param mixed $value
-     * @return bool
      */
     public function check($value): bool
     {
-        if (! is_string($value) || empty($value)) {
-            return false;
+        if (! \is_string($value) || empty($value)) {
+            return \false;
         }
 
-        json_decode($value);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return false;
+        if (\PHP_VERSION_ID >= 80300) {
+            return \json_validate($value);
         }
 
-        return true;
+        \json_decode($value);
+
+        if (\json_last_error() !== \JSON_ERROR_NONE) {
+            return \false;
+        }
+
+        return \true;
     }
 }

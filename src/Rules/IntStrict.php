@@ -4,7 +4,7 @@ namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Rule;
 
-class Integer extends Rule
+class IntStrict extends Rule
 {
 
     /** @var string */
@@ -18,6 +18,6 @@ class Integer extends Rule
      */
     public function check($value): bool
     {
-        return \filter_var($value, \FILTER_VALIDATE_INT) !== \false;
+        return \is_int($value);
     }
 }
