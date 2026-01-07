@@ -1,5 +1,6 @@
 # dirs
 /tests              export-ignore
+/cli-tools              export-ignore
 
 # files
 /phpunit.xml.dist   export-ignore
@@ -9,3 +10,4 @@
 # ext
 /*.md               export-ignore
 /*.xml              export-ignore
+/*.bat              export-ignore

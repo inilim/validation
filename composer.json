@@ -27,7 +27,8 @@
     "squizlabs/php_codesniffer": "^3",
     "php-coveralls/php-coveralls": "^2.2",
     "inilim/dump": "dev-main",
-    "inilim/tools": "dev-main"
+    "inilim/tools": "dev-main",
+    "symfony/process": "^7.4"
   },
   "scripts": {
     "test": [
