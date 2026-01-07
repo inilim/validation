@@ -447,9 +447,17 @@ class Validation
      */
     protected function ruleIsOptional(Attribute $attribute, Rule $rule): bool
     {
-        return false === $attribute->isRequired() and
-            false === $rule->isImplicit() and
-            false === $rule instanceof Required;
+        // Same and SameStrict rules should always be checked, even if value is empty
+        $ignoreOption = \in_array(\get_class($rule), [
+            \Rakit\Validation\Rules\Same::class,
+            \Rakit\Validation\Rules\SameStrict::class,
+            \Rakit\Validation\Rules\Different::class,
+        ], \true);
+
+        return false === $attribute->isRequired() &&
+            false === $rule->isImplicit() &&
+            false === $rule instanceof Required &&
+            false === $ignoreOption;
     }
 
     /**

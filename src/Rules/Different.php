@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Inilim\Tool\VD;
 use Rakit\Validation\Rule;
 
 class Different extends Rule

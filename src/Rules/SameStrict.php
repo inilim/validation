@@ -12,6 +12,8 @@ class SameStrict extends Rule
     /** @var string[] */
     protected array $fillableParams = ['field'];
 
+    // protected bool $implicit = true;  // We removed implicit flag to prevent breaking validation chain
+
     /**
      * Check the $value is valid
      * @param mixed $value

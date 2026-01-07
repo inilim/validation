@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Inilim\Tool\VD;
 use Rakit\Validation\Rule;
 
 class Same extends Rule
@@ -9,6 +10,8 @@ class Same extends Rule
     protected string $message = "The :attribute must be same with :field";
     /** @var string[] */
     protected array $fillableParams = ['field'];
+    
+    // protected bool $implicit = true;  // We removed implicit flag to prevent breaking validation chain
 
     /**
      * Check the $value is valid
