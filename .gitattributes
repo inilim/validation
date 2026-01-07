@@ -1,6 +1,7 @@
 # dirs
-/tests              export-ignore
-/cli-tools              export-ignore
+/tests               export-ignore
+/cli-tools           export-ignore
+/.kilocode           export-ignore
 
 # files
 /phpunit.xml.dist   export-ignore
