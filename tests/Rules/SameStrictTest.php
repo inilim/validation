@@ -183,4 +183,25 @@ class SameStrictTest extends TestCase
         $this->expectException(Rakit\Validation\MissingRequiredParameterException::class);
         $this->rule->fillParameters([])->check('value');
     }
+    
+    public function testSameStrictDoesNotBreakOtherRulesInChain()
+    {
+        // Test that same_strict doesn't break other rules in validation chain
+        $validator = new Rakit\Validation\Validator();
+        $validation = $validator->validate([
+            'number' => 123,
+            'number_confirmation' => 456 // different number, so same_strict fails, but alpha should be checked too
+        ], [
+            'number_confirmation' => 'same_strict:number|alpha'
+        ]);
+
+        // Both same_strict and alpha should fail
+        $this->assertFalse($validation->passes());
+        $this->assertTrue($validation->errors()->has('number_confirmation'));
+        
+        // Should have both errors
+        $errors = $validation->errors()->get('number_confirmation');
+        $this->assertArrayHasKey('same_strict', $errors);
+        $this->assertArrayHasKey('alpha', $errors);
+    }
 }
