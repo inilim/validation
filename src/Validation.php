@@ -267,6 +267,9 @@ class Validation
     function getOnlyValidData(): array
     {
         // \array_intersect_key($array, \array_flip((array) $keys));
+        if (!$this->attributes || !$this->validData) {
+            return [];
+        }
         return Helper::arrayUndot(
             \array_intersect_key(
                 Helper::arrayDot($this->validData),
