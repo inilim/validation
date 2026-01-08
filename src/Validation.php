@@ -3,6 +3,7 @@
 namespace Rakit\Validation;
 
 use Closure;
+use Inilim\Tool\VD;
 use Rakit\Validation\Rule;
 use Rakit\Validation\ErrorBag;
 use Rakit\Validation\Attribute;
@@ -257,6 +258,21 @@ class Validation
     function getValidData(): array
     {
         return $this->validData;
+    }
+
+    /**
+     * Get only validated data (excluding attributes that didn't have validation rules)
+     * @return mixed[]
+     */
+    function getOnlyValidData(): array
+    {
+        // \array_intersect_key($array, \array_flip((array) $keys));
+        return Helper::arrayUndot(
+            \array_intersect_key(
+                Helper::arrayDot($this->validData),
+                $this->attributes
+            )
+        );
     }
 
     /**
