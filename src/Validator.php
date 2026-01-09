@@ -309,6 +309,8 @@ final class Validator
             case 'default':
                 return Rules\Defaults::class;
 
+            case 'isbn':
+                return Rules\Isbn::class;
             case 'ip':
                 return Rules\Ip::class;
             case 'ipv4':
