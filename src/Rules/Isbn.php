@@ -12,7 +12,7 @@ use Rakit\Validation\Rule;
  */
 class Isbn extends Rule
 {
-    protected string $message = "The :attribute is not valid IPv6 Address";
+    protected string $message = "The :attribute is not valid ISBN";
 
     /**
      * @see https://howtodoinjava.com/regex/java-regex-validate-international-standard-book-number-isbns
