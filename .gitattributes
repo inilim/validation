@@ -2,12 +2,15 @@
 /tests               export-ignore
 /cli-tools           export-ignore
 /.kilocode           export-ignore
+/bench               export-ignore
+/files               export-ignore
 
 # files
 /phpunit.xml.dist   export-ignore
 /.travis.yml        export-ignore
 /test.php           export-ignore
 /.kilocodeignore    export-ignore
+/test.php           export-ignore
 
 # ext
 /*.md               export-ignore
