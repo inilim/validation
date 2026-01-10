@@ -12,7 +12,6 @@ class Required extends Rule
     protected string $message = "The :attribute is required";
 
     /**
-     * Check the $value is valid
      * @param mixed $value
      */
     function check($value): bool
@@ -29,17 +28,16 @@ class Required extends Rule
         }
         if ($type === 'array') {
             /** @var array $value */
-            return \count($value) > 0;
+            return !!$value;
         }
+
         return $value !== null;
     }
 
     /**
      * Set attribute is required if $this->attribute is set
-     *
-     * @return void
      */
-    protected function setAttributeAsRequired()
+    protected function setAttributeAsRequired(): void
     {
         if ($this->attribute) {
             $this->attribute->setRequired(true);

@@ -23,12 +23,9 @@ class RequiredIf extends Required
     }
 
     /**
-     * Check the $value is valid
-     *
      * @param mixed $value
-     * @return bool
      */
-    public function check($value): bool
+    function check($value): bool
     {
         $this->requireParameters(['field', 'values']);
 
@@ -36,8 +33,7 @@ class RequiredIf extends Required
         $definedValues = $this->parameter('values');
         $anotherValue = $this->getAttribute()->getValue($anotherAttribute);
 
-        $validator = $this->validation->getValidator();
-        $requiredValidator = $validator('required');
+        $requiredValidator = $this->validation->getValidator()->__invoke('required');
 
         if (\in_array($anotherValue, $definedValues)) {
             $this->setAttributeAsRequired();
