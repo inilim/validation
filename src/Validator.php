@@ -326,10 +326,14 @@ final class Validator
                 return Rules\Present::class;
             case 'different':
                 return Rules\Different::class;
+
+                // removed
             case 'uploaded_file':
-                return Rules\UploadedFile::class;
+                throw new RuleNotFoundException('Rule "uploaded_file" removed');
+                // removed
             case 'mimes':
-                return Rules\Mimes::class;
+                throw new RuleNotFoundException('Rule "mimes" removed');
+
             case 'callback':
                 return Rules\Callback::class;
 

@@ -53,7 +53,6 @@ $validation = $validator->make($_POST + $_FILES, [
     'email'                 => 'required|email',
     'password'              => 'required|min:6',
     'confirm_password'      => 'required|same:password',
-    'avatar'                => 'required|uploaded_file:0,500K,png,jpeg',
     'skills'                => 'array',
     'skills.*.id'           => 'required|numeric',
     'skills.*.percentage'   => 'required|numeric'
@@ -92,7 +91,6 @@ $validation = $validator->validate($_POST + $_FILES, [
     'email'                 => 'required|email',
     'password'              => 'required|min:6',
     'confirm_password'      => 'required|same:password',
-    'avatar'                => 'required|uploaded_file:0,500K,png,jpeg',
     'skills'                => 'array',
     'skills.*.id'           => 'required|numeric',
     'skills.*.percentage'   => 'required|numeric'
@@ -261,7 +259,7 @@ $validator = new Validator;
 $validation_a = $validator->make($dataset_a, [
 	'photo' => [
 		'required',
-		$validator('uploaded_file')->fileTypes('jpeg|png')->message('Photo must be jpeg/png image')
+		$validator('extension')->fillParameters(['pdf', 'png', 'txt'])->check('./absolute/path/to/somefile.txt')
 	]
 ]);
 
@@ -271,7 +269,7 @@ $validation_a->validate();
 ## Translation
 
 Translation is different with custom messages.
-Translation may needed when you use custom message for rule `in`, `not_in`, `mimes`, and `uploaded_file`.
+Translation may needed when you use custom message for rule `in` and `not_in`.
 
 For example if you use rule `in:1,2,3` we will set invalid message like "The Attribute only allows '1', '2', or '3'"
 where part "'1', '2', or '3'" is comes from ":allowed_values" tag.
@@ -480,8 +478,6 @@ Here are some examples:
 | []            | false |
 | ''            | false |
 
-For uploaded file, `$_FILES['key']['error']` must not `UPLOAD_ERR_NO_FILE`.
-
 </details>
 
 <details><summary><strong>required_if</strong>:another_field,value_1,value_2,...</summary>
@@ -519,82 +515,6 @@ The field under validation must be present and not empty only if all of the othe
 <details><summary><strong>required_without_all</strong>:field_1,field_2,...</summary>
 
 The field under validation must be present and not empty only when all of the other specified fields are not present.
-
-</details>
-
-<details><summary><strong>uploaded_file</strong>:min_size,max_size,extension_a,extension_b,...</summary>
-
-This rule will validate data from `$_FILES`.
-Field under this rule must be follows rules below to be valid:
-
-* `$_FILES['key']['error']` must be `UPLOAD_ERR_OK` or `UPLOAD_ERR_NO_FILE`. For `UPLOAD_ERR_NO_FILE` you can validate it with `required` rule.
-* If min size is given, uploaded file size **MUST NOT** be lower than min size.
-* If max size is given, uploaded file size **MUST NOT** be higher than max size.
-* If file types is given, mime type must be one of those given types.
-
-Here are some example definitions and explanations:
-
-* `uploaded_file`: uploaded file is optional. When it is not empty, it must be `ERR_UPLOAD_OK`.
-* `required|uploaded_file`: uploaded file is required, and it must be `ERR_UPLOAD_OK`.
-* `uploaded_file:0,1M`: uploaded file size must be between 0 - 1 MB, but uploaded file is optional.
-* `required|uploaded_file:0,1M,png,jpeg`: uploaded file size must be between 0 - 1MB and mime types must be `image/jpeg` or `image/png`.
-
-Optionally, if you want to have separate error message between size and type validation.
-You can use `mimes` rule to validate file types, and `min`, `max`, or `between` to validate it's size.
-
-For multiple file upload, PHP will give you undesirable array `$_FILES` structure ([here](http://php.net/manual/en/features.file-upload.multiple.php#53240) is the topic). So we make `uploaded_file` rule to automatically resolve your `$_FILES` value to be well-organized array structure. That means, you cannot only use `min`, `max`, `between`, or `mimes` rules to validate multiple file upload. You should put `uploaded_file` just to resolve it's value and make sure that value is correct uploaded file value.
-
-For example if you have input files like this:
-
-```html
-<input type="file" name="photos[]"/>
-<input type="file" name="photos[]"/>
-<input type="file" name="photos[]"/>
-```
-
-You can  simply validate it like this:
-
-```php
-$validation = $validator->validate($_FILES, [
-    'photos.*' => 'uploaded_file:0,2M,jpeg,png'
-]);
-
-// or
-
-$validation = $validator->validate($_FILES, [
-    'photos.*' => 'uploaded_file|max:2M|mimes:jpeg,png'
-]);
-```
-
-Or if you have input files like this:
-
-```html
-<input type="file" name="images[profile]"/>
-<input type="file" name="images[cover]"/>
-```
-
-You can validate it like this:
-
-```php
-$validation = $validator->validate($_FILES, [
-    'images.*' => 'uploaded_file|max:2M|mimes:jpeg,png',
-]);
-
-// or
-
-$validation = $validator->validate($_FILES, [
-    'images.profile' => 'uploaded_file|max:2M|mimes:jpeg,png',
-    'images.cover' => 'uploaded_file|max:5M|mimes:jpeg,png',
-]);
-```
-
-Now when you use `getValidData()` or `getInvalidData()` you will get well array structure just like single file upload.
-
-</details>
-
-<details><summary><strong>mimes</strong>:extension_a,extension_b,...</summary>
-
-The `$_FILES` item under validation must have a MIME type corresponding to one of the listed extensions.
 
 </details>
 
@@ -716,17 +636,6 @@ The field under this rule must have a size greater or equal than the given numbe
 
 For string value, size corresponds to the number of characters. For integer or float value, size corresponds to its numerical value. For an array, size corresponds to the count of the array. If your value is numeric string, you can put `numeric` rule to treat its size by numeric value instead of number of characters.
 
-You can also validate uploaded file using this rule to validate minimum size of uploaded file.
-For example:
-
-```php
-$validation = $validator->validate([
-    'photo' => $_FILES['photo']
-], [
-    'photo' => 'required|min:1M'
-]);
-```
-
 </details>
 
 <details><summary><strong>max</strong>:number</summary>
@@ -734,34 +643,12 @@ $validation = $validator->validate([
 The field under this rule must have a size lower or equal than the given number.
 Value size calculated in same way like `min` rule.
 
-You can also validate uploaded file using this rule to validate maximum size of uploaded file.
-For example:
-
-```php
-$validation = $validator->validate([
-    'photo' => $_FILES['photo']
-], [
-    'photo' => 'required|max:2M'
-]);
-```
-
 </details>
 
 <details><summary><strong>between</strong>:min,max</summary>
 
 The field under this rule must have a size between min and max params.
 Value size calculated in same way like `min` and `max` rule.
-
-You can also validate uploaded file using this rule to validate size of uploaded file.
-For example:
-
-```php
-$validation = $validator->validate([
-    'photo' => $_FILES['photo']
-], [
-    'photo' => 'required|between:1M,2M'
-]);
-```
 
 </details>
 
@@ -835,7 +722,7 @@ The field under this rule must be valid ipv6.
 
 The field under this rule must end with an extension corresponding to one of those listed.
 
-This is useful for validating a file type for a given a path or url. The `mimes` rule should be used for validating uploads.
+This is useful for checking the file type.
 
 </details>
 
@@ -1083,7 +970,7 @@ $params['column'] = 'email';
 $params['except'] = 'exception@mail.com';
 ```
 
-> If you want your custom rule accept parameter list like `in`,`not_in`, or `uploaded_file` rules,
+> If you want your custom rule accept parameter list like `in` and `not_in` rules,
   you just need to override `fillParameters(array $params)` method in your custom rule class.
 
 Note that `unique` rule that we created above also can be used like this:
@@ -1192,7 +1079,7 @@ class YourCustomRule extends Rule implements ModifyValue
 
 #### Before Validation Hook
 
-You may want to do some preparation before validation running. For example our `uploaded_file` rule will resolves attribute value that come from `$_FILES` (undesirable) array structure to be well-organized array structure, so we can validate multiple file upload just like validating other data.
+You may want to do some preparation before validation running.
 
 To do this, you should implements `Rakit\Validation\Rules\Interfaces\BeforeValidate` and create method `beforeValidate()` to your custom rule class.
 

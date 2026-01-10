@@ -2,22 +2,28 @@
 
 namespace Rakit\Validation\Rules\Traits;
 
-use InvalidArgumentException;
+use Rakit\Validation\Rule;
 
+/**
+ * @psalm-require-extends Rule
+ * @phpstan-require-extends Rule
+ */
 trait SizeTrait
 {
-
     /**
      * Get size (int) value from given $value
-     *
      * @param int|string $value
      * @return float|false
      */
     protected function getValueSize($value)
     {
+        /** @var Rule $this */
+
+        $attribute = $this->getAttribute();
+
         if (
-            $this->getAttribute()
-            && ($this->getAttribute()->hasRule('numeric') || $this->getAttribute()->hasRule('integer'))
+            $attribute
+            && ($attribute->hasRule('numeric') || $attribute->hasRule('integer'))
             && \is_numeric($value)
         ) {
             $value = (float) $value;
@@ -31,8 +37,6 @@ trait SizeTrait
         } elseif ($typeValue === 'string') {
             /** @var string $value */
             return (float) \mb_strlen($value, 'UTF-8');
-        } elseif ($this->isUploadedFileValue($value)) {
-            return (float) $value['size'];
         } elseif ($typeValue === 'array') {
             /** @var array $value */
             return (float) \count($value);
@@ -43,23 +47,21 @@ trait SizeTrait
 
     /**
      * Given $size and get the bytes
-     *
      * @param string|int $size
-     * @return float
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
-    protected function getBytesSize($size)
+    protected function getBytesSize($size): float
     {
         if (\is_numeric($size)) {
             return (float) $size;
         }
 
         if (!\is_string($size)) {
-            throw new InvalidArgumentException("Size must be string or numeric Bytes", 1);
+            throw new \InvalidArgumentException("Size must be string or numeric Bytes", 1);
         }
 
         if (!\preg_match("/^(?<number>((\d+)?\.)?\d+)(?<format>(B|K|M|G|T|P)B?)?$/i", $size, $match)) {
-            throw new InvalidArgumentException("Size is not valid format", 1);
+            throw new \InvalidArgumentException("Size is not valid format", 1);
         }
 
         $number = (float) $match['number'];
@@ -89,27 +91,5 @@ trait SizeTrait
             default:
                 return $number;
         }
-    }
-
-    /**
-     * Check whether value is from $_FILES
-     *
-     * @param mixed $value
-     * @return bool
-     */
-    function isUploadedFileValue($value): bool
-    {
-        if (!\is_array($value)) {
-            return \false;
-        }
-
-        $keys = ['name', 'type', 'tmp_name', 'size', 'error'];
-        foreach ($keys as $key) {
-            if (!\array_key_exists($key, $value)) {
-                return \false;
-            }
-        }
-
-        return true;
     }
 }

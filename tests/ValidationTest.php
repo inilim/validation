@@ -47,13 +47,6 @@ class ValidationTest extends \Rakit\Validation\Tests\TestCase
                 ],
             ],
             [
-                'uploaded_file:0,500K,png,jpeg',
-                [
-                    'uploaded_file',
-                    ['0', '500K', 'png', 'jpeg'],
-                ],
-            ],
-            [
                 'same:password',
                 [
                     'same',

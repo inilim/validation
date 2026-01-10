@@ -6,8 +6,6 @@ use Rakit\Validation\Rule;
 
 class Required extends Rule
 {
-    use Traits\FileTrait;
-
     protected bool $implicit = true;
     protected string $message = "The :attribute is required";
 
@@ -18,9 +16,6 @@ class Required extends Rule
     {
         $this->setAttributeAsRequired();
 
-        if ($this->attribute && $this->attribute->hasRule('uploaded_file')) {
-            return $this->isValueFromUploadedFiles($value) and $value['error'] != \UPLOAD_ERR_NO_FILE;
-        }
         $type = \gettype($value);
         if ($type === 'string') {
             /** @var string $value */
