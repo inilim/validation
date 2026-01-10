@@ -22,7 +22,7 @@ class Validation
 
     protected Validator $validator;
 
-    /** @var array */
+    /** @var mixed[] */
     protected array $inputs = [];
 
     /** @var Attribute[] */
@@ -33,10 +33,10 @@ class Validation
 
     protected string $messageSeparator = ':';
 
-    /** @var array */
+    /** @var mixed[] */
     protected array $validData = [];
 
-    /** @var array */
+    /** @var mixed[] */
     protected array $invalidData = [];
 
     protected ErrorBag $errors;
@@ -569,6 +569,12 @@ class Validation
         if ($type === 'string' || \is_numeric($value)) {
             return (string)$value;
         } elseif ($type === 'array' || $type === 'object') {
+            if (\PHP_VERSION_ID >= 80100 && $value instanceof \UnitEnum) {
+                if ($value instanceof \BackedEnum) {
+                    return $value->value;
+                }
+                return $value->name;
+            }
             return (string)\json_encode($value);
         } else {
             return '';
@@ -644,8 +650,8 @@ class Validation
 
     /**
      * Given $inputs and resolve input attributes
-     * @param array $inputs
-     * @return array
+     * @param mixed[] $inputs
+     * @return mixed[]
      */
     protected function resolveInputAttributes(array $inputs): array
     {
