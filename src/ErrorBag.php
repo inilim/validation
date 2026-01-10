@@ -6,7 +6,7 @@ class ErrorBag
 {
 
     /** @var array */
-    protected $messages = [];
+    protected array $messages = [];
 
     /**
      * Constructor
@@ -43,13 +43,10 @@ class ErrorBag
 
     /**
      * Check given key is existed
-     *
-     * @param string $key
-     * @return bool
      */
     public function has(string $key): bool
     {
-        list($key, $ruleName) = $this->parsekey($key);
+        [$key, $ruleName] = $this->parsekey($key);
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
             return \count(Helper::arrayDot($messages)) > 0;
@@ -72,7 +69,7 @@ class ErrorBag
      */
     public function first(string $key)
     {
-        list($key, $ruleName) = $this->parsekey($key);
+        [$key, $ruleName] = $this->parsekey($key);
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
             $flattenMessages = Helper::arrayDot($messages);
@@ -94,14 +91,11 @@ class ErrorBag
 
     /**
      * Get messages from given key, can be use custom format
-     *
-     * @param string $key
-     * @param string $format
      * @return array
      */
     public function get(string $key, string $format = ':message'): array
     {
-        list($key, $ruleName) = $this->parsekey($key);
+        [$key, $ruleName] = $this->parsekey($key);
         $results = [];
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
@@ -125,8 +119,6 @@ class ErrorBag
 
     /**
      * Get all messages
-     *
-     * @param string $format
      * @return array
      */
     public function all(string $format = ':message'): array
@@ -194,7 +186,7 @@ class ErrorBag
      */
     protected function isWildcardKey(string $key): bool
     {
-        return false !== \strpos($key, '*');
+        return \false !== \strpos($key, '*');
     }
 
     /**
@@ -213,7 +205,7 @@ class ErrorBag
         $filteredMessages = [];
 
         foreach ($messages as $k => $keyMessages) {
-            if ((bool) \preg_match('#^' . $pattern . '\z#u', $k) === false) {
+            if ((bool) \preg_match('#^' . $pattern . '\z#u', $k) === \false) {
                 continue;
             }
 

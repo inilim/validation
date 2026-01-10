@@ -15,16 +15,13 @@ final class Validator
     use Traits\TranslationsTrait, Traits\MessagesTrait;
 
     /** @var array */
-    protected $translations = [];
+    // protected array $translations = [];
 
     /** @var array<string,Rule|callable():Rule|class-string<Rule>> */
-    protected $rules = [];
+    protected array $rules = [];
 
-    /** @var bool */
-    protected $allowRuleOverride = false;
-
-    /** @var bool */
-    protected $useHumanizedKeys = true;
+    protected bool $allowRuleOverride = false;
+    protected bool $useHumanizedKeys = true;
 
     /**
      * Constructor

@@ -3,7 +3,6 @@
 namespace Rakit\Validation\Tests;
 
 use Rakit\Validation\Rules\Extension;
-use PHPUnit\Framework\TestCase;
 
 class ExtensionTest extends \Rakit\Validation\Tests\TestCase
 {

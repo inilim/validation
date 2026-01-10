@@ -8,28 +8,23 @@ use Rakit\Validation\Validation;
 final class Attribute
 {
     /** @var array<string,Rule> */
-    protected $rules = [];
+    protected array $rules = [];
 
-    /** @var string */
-    protected $key;
+    protected string $key;
 
-    /** @var string|null */
-    protected $alias;
+    protected ?string $alias;
 
-    /** @var Validation */
-    protected $validation;
+    protected Validation $validation;
 
-    /** @var bool */
-    protected $required = false;
+    protected bool $required = false;
 
-    /** @var Attribute|null */
-    protected $primaryAttribute = null;
+    protected ?Attribute $primaryAttribute = null;
 
     /** @var array */
-    protected $otherAttributes = [];
+    protected array $otherAttributes = [];
 
     /** @var array */
-    protected $keyIndexes = [];
+    protected array $keyIndexes = [];
 
     /**
      * @param Rule[] $rules
@@ -37,7 +32,7 @@ final class Attribute
     function __construct(
         Validation $validation,
         ?string $key,
-        $alias = null,
+        ?string $alias = null,
         array $rules = []
     ) {
         $this->validation = $validation;
@@ -199,7 +194,7 @@ final class Attribute
      */
     function isUsingDotNotation(): bool
     {
-        return \strpos($this->getKey(), '.') !== false;
+        return \strpos($this->getKey(), '.') !== \false;
     }
 
     /**

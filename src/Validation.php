@@ -20,37 +20,31 @@ class Validation
 {
     use Traits\TranslationsTrait, Traits\MessagesTrait;
 
-    /** @var Validator */
-    protected $validator;
+    protected Validator $validator;
 
     /** @var array */
-    protected $inputs = [];
+    protected array $inputs = [];
 
     /** @var Attribute[] */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /** @var array */
-    protected $aliases = [];
+    protected array $aliases = [];
 
-    /** @var string */
-    protected $messageSeparator = ':';
-
-    /** @var array */
-    protected $validData = [];
+    protected string $messageSeparator = ':';
 
     /** @var array */
-    protected $invalidData = [];
+    protected array $validData = [];
 
-    /** @var ErrorBag */
-    protected $errors;
+    /** @var array */
+    protected array $invalidData = [];
 
-    /** @var Required */
-    protected $requiredRule;
+    protected ErrorBag $errors;
 
-    /** @var bool */
-    protected $hasBeforeValidateRule = false;
-    /** @var bool */
-    protected $hasModifyValueRule    = false;
+    protected Required $requiredRule;
+
+    protected bool $hasBeforeValidateRule = false;
+    protected bool $hasModifyValueRule    = false;
 
     /**
      * Constructor
