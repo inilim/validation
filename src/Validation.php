@@ -590,6 +590,7 @@ class Validation
     {
         if (\is_string($rulesInstruction)) {
             $rulesInstruction = \explode('|', $rulesInstruction);
+            /** @var string[] $rulesInstruction */
         }
 
         $resolvedRulesInstruction = [];
