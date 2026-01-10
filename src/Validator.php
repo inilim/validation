@@ -261,6 +261,8 @@ final class Validator
                 // array
             case 'array':
                 return Rules\TypeArray::class;
+            case 'array_list':
+                return Rules\ArrayList::class;
             case 'array_keys_only_str':
             case 'array_keys_only_string':
                 return Rules\TypeArrayKeysOnlyString::class;

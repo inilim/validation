@@ -845,6 +845,13 @@ The field under this rule must be array.
 
 </details>
 
+<details><summary><strong>array_list</strong></summary>
+
+The field under this rule must be an array list (sequential integer-indexed array). This rule validates that the array has consecutive integer keys starting from 0, essentially checking if it's a list/array rather than an associative array. For PHP 8.1+, it uses the native `array_is_list()` function, for older versions it provides a polyfill implementation.
+
+</details>
+
+
 <details><summary><strong>same</strong>:another_field</summary>
 
 The field value under this rule must be same with `another_field` value.
