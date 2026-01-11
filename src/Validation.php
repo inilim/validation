@@ -116,7 +116,13 @@ class Validation
         }
 
         foreach ($this->attributes as $attribute) {
-            $this->validateAttribute($attribute);
+            if ($this->isArrayAttribute($attribute)) {
+                foreach ($this->parseArrayAttribute($attribute) as $attr) {
+                    $this->validateAttribute($attr);
+                }
+            } else {
+                $this->validateAttribute($attribute);
+            }
         }
 
         return $this;
@@ -305,14 +311,6 @@ class Validation
      */
     protected function validateAttribute(Attribute $attribute): void
     {
-        if ($this->isArrayAttribute($attribute)) {
-            $attributes = $this->parseArrayAttribute($attribute);
-            foreach ($attributes as $attr) {
-                $this->validateAttribute($attr);
-            }
-            return;
-        }
-
         $key          = $attribute->getKey();
         $hasKey       = Helper::arrayHas($this->inputs, $key);
         $value        = $hasKey ? Helper::arrayGet($this->inputs, $key) : null;
@@ -371,7 +369,7 @@ class Validation
 
     /**
      * Parse array attribute into it's child attributes
-     * @return array
+     * @return Attribute[]
      */
     protected function parseArrayAttribute(Attribute $attribute): array
     {
@@ -435,7 +433,7 @@ class Validation
 
         $value = Helper::arrayGet($this->inputs, $attributeKey, '__missing__');
 
-        if ($value != '__missing__') {
+        if ($value !== '__missing__') {
             Helper::arraySet($results, $attributeKey, $value);
         }
 
