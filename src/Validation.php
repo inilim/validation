@@ -297,12 +297,13 @@ class Validation
         $hasKey       = Helper::arrayHas($this->inputs, $key);
         $value        = $hasKey ? Helper::arrayGet($this->inputs, $key) : null;
         $isEmptyValue = \false === $this->requiredRule->check($value);
-        unset($key);
-        if ($attribute->hasRule('nullable') && $isEmptyValue) {
-            $rules = [];
-        } else {
-            $rules = $attribute->getRules();
-        }
+        // if ($attribute->hasRule('nullable') && $isEmptyValue) {
+        //     $rules = [];
+        // } else {
+        //     $rules = $attribute->getRules();
+        // }
+
+        $rules = $attribute->getRules();
 
         $isValid = true;
         foreach ($rules as $rule) {
@@ -330,11 +331,25 @@ class Validation
             }
         } // endforeach
 
+        // if ($key === 'config.RESOURCES_DIR') {
+        //     VD::dd([
+        //         '$isValid' => $isValid,
+        //         '$isEmptyValue' => $isEmptyValue,
+        //     ]);
+        // }
+
         // TODO отсутствие правила required игнорирует false в других правилах (а точнее даже не делает проверку),
         // и вносит данные в getValidData(), даже если они плохие
         if ($isValid && $isEmptyValue && $attribute->hasFalseRuleCheck()) {
             $isValid = false;
         }
+
+        // if ($key === 'config.RESOURCES_DIR') {
+        //     VD::dd([
+        //         '$isValid' => $isValid,
+        //         '$isEmptyValue' => $isEmptyValue,
+        //     ]);
+        // }
 
         if ($isValid) {
             $this->setValidData($attribute, $value);
