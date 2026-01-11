@@ -8,9 +8,7 @@ class Helper
      * Check if an item or items exist in an array using "dot" notation.
      * Adapted from: https://github.com/illuminate/support/blob/v5.3.23/Arr.php#L81
      *
-     * @param  array $array
-     * @param  string $key
-     * @return bool
+     * @param mixed[] $array
      */
     static function arrayHas(array $array, string $key): bool
     {
