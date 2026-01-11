@@ -26,6 +26,40 @@ final class Attribute
     /** @var array */
     protected array $keyIndexes = [];
 
+    // ---------------------------------------------
+    // 
+    // ---------------------------------------------
+
+    /** @var array<string,bool> */
+    protected array $ruleChecks = [];
+
+    /**
+     * @param string|Rule $ruleOrKey
+     */
+    function setRuleCheck($ruleOrKey, bool $checkResult): self
+    {
+        if (!\is_string($ruleOrKey)) {
+            $ruleOrKey = $ruleOrKey->getKey();
+        }
+        $this->ruleChecks[$ruleOrKey] = $checkResult;
+        return $this;
+    }
+
+    function hasFalseRuleCheck(): bool
+    {
+        foreach ($this->ruleChecks as $check) {
+            if ($check === false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // ---------------------------------------------
+    // 
+    // ---------------------------------------------
+
     /**
      * @param Rule[] $rules
      */

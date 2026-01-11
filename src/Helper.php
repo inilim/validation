@@ -58,20 +58,6 @@ class Helper
     }
 
     /**
-     * Convert a flatten "dot" notation array into an expanded array.
-     * @param  iterable  $array
-     */
-    static function arrayUndot($array): array
-    {
-        $results = [];
-        foreach ($array as $key => $value) {
-            self::arraySet($results, $key, $value);
-        }
-
-        return $results;
-    }
-
-    /**
      * Flatten a multi-dimensional associative array with dots.
      * Adapted from: https://github.com/illuminate/support/blob/v5.3.23/Arr.php#L81
      *

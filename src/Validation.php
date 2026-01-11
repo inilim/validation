@@ -261,24 +261,6 @@ class Validation
     }
 
     /**
-     * Get only validated data (excluding attributes that didn't have validation rules)
-     * @return mixed[]
-     */
-    function getOnlyValidData(): array
-    {
-        // \array_intersect_key($array, \array_flip((array) $keys));
-        if (!$this->attributes || !$this->validData) {
-            return [];
-        }
-        return Helper::arrayUndot(
-            \array_intersect_key(
-                Helper::arrayDot($this->validData),
-                $this->attributes
-            )
-        );
-    }
-
-    /**
      * Get invalid data
      * @return array
      */
@@ -315,12 +297,6 @@ class Validation
         $hasKey       = Helper::arrayHas($this->inputs, $key);
         $value        = $hasKey ? Helper::arrayGet($this->inputs, $key) : null;
         $isEmptyValue = \false === $this->requiredRule->check($value);
-        // dde([
-        //     '$isEmptyValue' => $isEmptyValue,
-        //     '$key' => $key,
-        //     '$value' => $value,
-        //     '$hasKey' => $hasKey,
-        // ]);
         unset($key);
         if ($attribute->hasRule('nullable') && $isEmptyValue) {
             $rules = [];
@@ -337,20 +313,28 @@ class Validation
                 $isEmptyValue = false === $this->requiredRule->check($value);
             }
 
+            // INFO при любом раскаде делаем проверку
+            $check = $rule->check($value);
+            $attribute->setRuleCheck($rule, $check);
+
             if ($isEmptyValue && $this->ruleIsOptional($attribute, $rule)) {
                 continue;
             }
 
-            if (!$rule->check($value)) {
+            if (!$check) {
                 $isValid = false;
                 $this->addError($attribute, $value, $rule);
                 if ($rule->isImplicit()) {
                     break;
                 }
             }
-        }
+        } // endforeach
 
-        // if ($hasKey) return;
+        // TODO отсутствие правила required игнорирует false в других правилах (а точнее даже не делает проверку),
+        // и вносит данные в getValidData(), даже если они плохие
+        if ($isValid && $isEmptyValue && $attribute->hasFalseRuleCheck()) {
+            $isValid = false;
+        }
 
         if ($isValid) {
             $this->setValidData($attribute, $value);
