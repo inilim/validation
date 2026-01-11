@@ -41,6 +41,38 @@ class ValidationTest extends \Rakit\Validation\Tests\TestCase
         $this->assertFalse(isset($data['config']['RESOURCES_DIR']));
     }
 
+    function test_with_rule_nullable()
+    {
+        $inputs = [
+            'config' => [
+                'CREATE_TRY_RES' => false,
+                'REQ_BLOCK' => false,
+                'RES_BLOCK' => false,
+                'REQ_DIR' => 'aaaa',
+                'RES_DIR' => 'bbbb',
+                'TRY_RES_DIR' => 'cccc',
+                'RESOURCES_DIR' => [] // <--- ранее пропускал
+            ]
+        ];
+
+        $rules = [
+            'config' => 'required|array',
+            'config.CREATE_TRY_RES' => 'required|bool_strict',
+            'config.REQ_BLOCK' => 'required|bool_strict',
+            'config.RES_BLOCK' => 'required|bool_strict',
+            'config.REQ_DIR' => 'required|str_strict',
+            'config.RES_DIR' => 'required|str_strict',
+            'config.TRY_RES_DIR' => 'required|str_strict',
+            'config.RESOURCES_DIR' => 'nullable|str_strict',
+        ];
+
+        $validation = (new Validator)->make($inputs, $rules)->validate();
+
+        // TODO ранее nullable убирал все правила если значение пустое.
+        $data = $validation->getValidData();
+        $this->assertFalse(isset($data['config']['RESOURCES_DIR']));
+    }
+
     /**
      * @param string $rules
      * @param array $expectedResult
